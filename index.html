@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="ds/fonts.css">
+<link rel="stylesheet" href="ds/colors.css">
+<link rel="stylesheet" href="ds/typography.css">
+<link rel="stylesheet" href="ds/spacing.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1A2E52">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Sam OS">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+body{margin:0;background:#EFEDE8;font-family:"DM Sans",system-ui,sans-serif;color:#2B3142}
+a{color:#E15628}a:hover{color:#C8481D}
+input,textarea,select,button{font-family:inherit}
+textarea,input{outline:none}
+*{box-sizing:border-box}
+@keyframes popin{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes sheet{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes dotpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 16px;background:#EFEDE8">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;display:flex;flex-direction:column;background:#FAFAF9;position:relative;font-family:'DM Sans',system-ui,sans-serif;color:#2B3142">
+
+<!-- scrollable screen area -->
+<div style="flex:1;overflow:auto;padding:62px 0 110px" onScroll="{{ onScroll }}">
+
+<!-- ===== TODAY ===== -->
+<sc-if value="{{ isToday }}" hint-placeholder-val="{{ true }}">
+<div style="padding:8px 20px 0;animation:rise .28s cubic-bezier(.2,0,0,1)">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E15628;display:flex;align-items:center;gap:7px"><span style="width:7px;height:7px;border-radius:50%;background:#E15628;display:inline-block"></span>{{ dateLong }}</div>
+      <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;margin:6px 0 0;color:#1A2E52;letter-spacing:-.01em">{{ greeting }}</h1>
+    </div>
+    <button onClick="{{ openSettings }}" aria-label="Settings" style="width:40px;height:40px;border-radius:50%;border:1px solid #E4E3DE;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#1A2E52;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;flex:none">{{ initial }}</button>
+  </div>
+
+  <!-- daily word -->
+  <div style="margin-top:18px;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:22px 22px 20px;color:#1A2E52;position:relative;overflow:hidden">
+    <div style="position:absolute;right:20px;top:22px;width:10px;height:10px;border-radius:50%;background:#E15628"></div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#787774;position:relative">{{ dailyKind }}</div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;line-height:1.08;margin-top:10px;max-width:300px;position:relative;text-wrap:pretty;letter-spacing:-.01em">{{ dailyTitle }}</div>
+    <div style="font-size:14px;line-height:1.6;margin-top:10px;color:#787774;max-width:300px;position:relative;text-wrap:pretty">{{ dailyBody }}</div>
+  </div>
+
+  <!-- what matters today -->
+  <div style="margin-top:22px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">What matters today</div>
+    <div style="font-size:12px;color:#787774">{{ mattersCount }}</div>
+  </div>
+  <sc-if value="{{ hasMatters }}" hint-placeholder-val="{{ false }}">
+  <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ matters }}" as="m" hint-placeholder-count="0">
+      <button onClick="{{ m.go }}" style="display:flex;align-items:center;gap:12px;text-align:left;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:12px 14px;cursor:pointer;width:100%">
+        <span style="width:10px;height:10px;border-radius:50%;flex:none;background:{{ m.color }}"></span>
+        <span style="flex:1;min-width:0">
+          <span style="display:block;font-size:14.5px;font-weight:500;color:#1A2E52;line-height:1.3">{{ m.title }}</span>
+          <span style="display:block;font-size:12px;color:#787774;margin-top:2px">{{ m.sub }}</span>
+        </span>
+        <span style="font-size:11px;font-weight:600;color:{{ m.color }};letter-spacing:.04em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;flex:none">{{ m.tag }}</span>
+      </button>
+    </sc-for>
+  </div>
+  </sc-if>
+  <sc-if value="{{ noMatters }}" hint-placeholder-val="{{ true }}">
+  <div style="margin-top:10px;background:#fff;border:1px dashed #D9DBDC;border-radius:10px;padding:16px;font-size:13.5px;color:#787774;line-height:1.5">Nothing is pressing. Add a task with a due date, a person to check in on, or a rock for the quarter and the day will shape itself here.</div>
+  </sc-if>
+
+  <!-- morning brief -->
+  <sc-if value="{{ briefCardOn }}" hint-placeholder-val="{{ false }}">
+  <div style="margin-top:22px;background:#EDF2FA;border-radius:12px;padding:16px 18px">
+    <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#1A2E52"></span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#1A2E52">Morning brief</span><span style="margin-left:auto;font-size:11.5px;color:#787774">{{ aiBriefMeta }}</span></div>
+    <sc-if value="{{ aiBriefHas }}" hint-placeholder-val="{{ false }}"><p style="margin:10px 0 0;font-size:14.5px;line-height:1.6;color:#1A2E52;white-space:pre-wrap;text-wrap:pretty">{{ aiBriefText }}</p></sc-if>
+    <sc-if value="{{ aiBriefNone }}" hint-placeholder-val="{{ true }}"><p style="margin:10px 0 0;font-size:13.5px;line-height:1.6;color:#787774">{{ aiBriefHint }}</p></sc-if>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button onClick="{{ aiBriefRun }}" style="border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:13px;padding:9px 14px;cursor:pointer">{{ aiBriefBtn }}</button>
+      <sc-if value="{{ aiNoKey }}" hint-placeholder-val="{{ false }}"><button onClick="{{ openAiSettings }}" style="border-radius:6px;border:1px solid #D6E0F0;background:#fff;color:#1A2E52;font-weight:600;font-size:13px;padding:9px 14px;cursor:pointer">Add API key</button></sc-if>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- today's agenda -->
+  <div style="margin-top:22px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Today's agenda</div>
+    <div style="font-size:12px;color:#787774">{{ calStatus }}</div>
+  </div>
+  <sc-if value="{{ calConnected }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:10px;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:4px 16px">
+      <sc-for list="{{ agenda }}" as="ev" hint-placeholder-count="0">
+        <div style="display:flex;gap:12px;padding:11px 0;border-bottom:1px solid #F3F2EF">
+          <span style="width:56px;flex:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:{{ ev.timeColor }};line-height:1.3;padding-top:1px">{{ ev.time }}</span>
+          <span style="width:3px;border-radius:2px;background:{{ ev.bar }};flex:none"></span>
+          <span style="flex:1;min-width:0"><span style="display:block;font-size:14.5px;font-weight:500;color:{{ ev.fg }};line-height:1.3;text-decoration:{{ ev.deco }}">{{ ev.title }}</span><span style="display:block;font-size:12px;color:#9B9A97;margin-top:2px">{{ ev.sub }}</span></span>
+          <sc-if value="{{ ev.hasPerson }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ev.touch }}" style="flex:none;align-self:center;border-radius:999px;border:1px solid {{ ev.tBorder }};background:{{ ev.tBg }};color:{{ ev.tFg }};font-size:11px;font-weight:600;padding:4px 9px;cursor:pointer">{{ ev.tLabel }}</button></sc-if>
+        </div>
+      </sc-for>
+      <sc-if value="{{ agendaEmpty }}" hint-placeholder-val="{{ true }}"><div style="padding:14px 0;font-size:13.5px;color:#787774;line-height:1.5">{{ agendaEmptyMsg }}</div></sc-if>
+    </div>
+  </sc-if>
+  <sc-if value="{{ calNotConnected }}" hint-placeholder-val="{{ true }}">
+    <button onClick="{{ openSettings }}" style="margin-top:10px;width:100%;text-align:left;background:#fff;border:1px dashed #D9DBDC;border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px"><span style="width:8px;height:8px;border-radius:50%;background:#1A2E52;flex:none"></span><span style="flex:1;font-size:13.5px;color:#787774;line-height:1.5">Connect Outlook and Google to see your day here.</span><span style="font-size:12px;font-weight:600;color:#1A2E52">Connect</span></button>
+  </sc-if>
+
+  <!-- loft snapshot -->
+  <sc-if value="{{ pcoConnected }}" hint-placeholder-val="{{ false }}">
+  <div style="margin-top:22px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">LOFT last Sunday</div>
+    <div style="font-size:12px;color:#787774">{{ pcoStatus }}</div>
+  </div>
+  <div style="margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #E4E3DE;border-radius:12px;overflow:hidden;background:#fff">
+    <sc-for list="{{ pcoStats }}" as="st" hint-placeholder-count="3">
+      <div style="padding:14px;border-right:1px solid #E4E3DE"><div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;line-height:1;color:#1A2E52">{{ st.n }}</div><div style="font-size:11px;color:#787774;margin-top:5px;line-height:1.3">{{ st.label }}</div><div style="font-size:11px;font-weight:600;color:{{ st.dColor }};margin-top:3px">{{ st.delta }}</div></div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ pcoErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px;font-size:12.5px;color:#A53A16;line-height:1.5">{{ pcoErrMsg }}</div></sc-if>
+  </sc-if>
+
+  <!-- this sunday -->
+  <div style="margin-top:22px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">This Sunday</div>
+    <div style="font-size:12px;color:#787774">{{ srmCountdown }}</div>
+  </div>
+  <sc-if value="{{ srmHasCurrent }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ openSermons }}" style="margin-top:10px;width:100%;text-align:left;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:14px 16px;cursor:pointer">
+      <span style="display:flex;align-items:center;gap:8px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#E15628">{{ srmCurText }}</span><span style="margin-left:auto;font-size:11.5px;color:#787774">{{ srmCurStage }}</span></span>
+      <span style="display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;line-height:1.1;color:#1A2E52;margin-top:6px">{{ srmCurTitle }}</span>
+      <span style="display:flex;gap:3px;margin-top:12px"><sc-for list="{{ srmCurDots }}" as="d" hint-placeholder-count="8"><span style="flex:1;height:4px;border-radius:2px;background:{{ d.bg }}"></span></sc-for></span>
+      <span style="display:block;font-size:12.5px;color:#787774;margin-top:8px">{{ srmCurNext }}</span>
+    </button>
+  </sc-if>
+  <sc-if value="{{ srmNoCurrent }}" hint-placeholder-val="{{ true }}">
+    <button onClick="{{ openSermons }}" style="margin-top:10px;width:100%;text-align:left;background:#fff;border:1px dashed #D9DBDC;border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px"><span style="width:8px;height:8px;border-radius:50%;background:#C8923A;flex:none"></span><span style="flex:1;font-size:13.5px;color:#787774;line-height:1.5">No sermon in the pipeline. Start one and Sunday becomes the deadline.</span><span style="font-size:12px;font-weight:600;color:#1A2E52">Start</span></button>
+  </sc-if>
+
+  <!-- asana summary -->
+  <div style="margin-top:22px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Asana</div>
+    <div style="font-size:12px;color:#787774">{{ asanaStatus }}</div>
+  </div>
+  <sc-if value="{{ asanaConnected }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      <sc-for list="{{ asanaBuckets }}" as="b" hint-placeholder-count="3">
+        <button onClick="{{ b.go }}" style="text-align:left;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:12px 12px 10px;cursor:pointer;display:flex;flex-direction:column;gap:6px"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:30px;line-height:1;color:{{ b.color }}">{{ b.n }}</span><span style="font-size:11.5px;color:#787774;line-height:1.3">{{ b.label }}</span></button>
+      </sc-for>
+    </div>
+  </sc-if>
+  <sc-if value="{{ asanaNotConnected }}" hint-placeholder-val="{{ true }}">
+    <button onClick="{{ openSettings }}" style="margin-top:10px;width:100%;text-align:left;background:#fff;border:1px dashed #D9DBDC;border-radius:12px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px"><span style="width:8px;height:8px;border-radius:50%;background:#E15628;flex:none"></span><span style="flex:1;font-size:13.5px;color:#787774;line-height:1.5">Connect Asana to see what is past due, due today, and coming this week.</span><span style="font-size:12px;font-weight:600;color:#1A2E52">Connect</span></button>
+  </sc-if>
+
+  <!-- dashboard tiles -->
+  <div style="margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <button onClick="{{ goTasks }}" style="text-align:left;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;min-height:118px">
+      <span style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#787774">Tasks</span><span style="width:8px;height:8px;border-radius:50%;background:#E15628"></span></span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;color:#1A2E52">{{ openTasks }}</span>
+      <span style="font-size:12px;color:#787774">{{ taskSub }}</span>
+    </button>
+    <button onClick="{{ goPeople }}" style="text-align:left;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;min-height:118px">
+      <span style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#787774">People</span><span style="width:8px;height:8px;border-radius:50%;background:#3D7C82"></span></span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;color:#1A2E52">{{ quietCount }}</span>
+      <span style="font-size:12px;color:#787774">{{ peopleSub }}</span>
+    </button>
+    <button onClick="{{ goRocks }}" style="text-align:left;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:14px;min-height:118px">
+      <span style="position:relative;width:64px;height:64px;flex:none;border-radius:50%;background:conic-gradient(#1A2E52 {{ rockPct }}%, #EAEAEA 0);display:flex;align-items:center;justify-content:center"><span style="width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#1A2E52">{{ rockLabel }}</span></span>
+      <span style="display:flex;flex-direction:column;gap:4px;min-width:0"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#787774">Rocks</span><span style="font-size:12px;color:#787774;line-height:1.35">{{ rockSub }}</span></span>
+    </button>
+    <button onClick="{{ goRhythms }}" style="text-align:left;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:14px;min-height:118px">
+      <span style="position:relative;width:64px;height:64px;flex:none;border-radius:50%;background:conic-gradient(#346538 {{ rhyPct }}%, #EAEAEA 0);display:flex;align-items:center;justify-content:center"><span style="width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#1A2E52">{{ rhyLabel }}</span></span>
+      <span style="display:flex;flex-direction:column;gap:4px;min-width:0"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#787774">Rhythms</span><span style="font-size:12px;color:#787774;line-height:1.35">{{ rhySub }}</span></span>
+    </button>
+    <button onClick="{{ goSoul }}" style="text-align:left;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;min-height:118px">
+      <span style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#787774">Reflection</span><span style="width:8px;height:8px;border-radius:50%;background:#C8923A"></span></span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;color:#1A2E52">{{ jrnStreakBig }}</span>
+      <span style="font-size:12px;color:#787774">{{ jrnSub }}</span>
+    </button>
+    <button onClick="{{ goWork }}" style="text-align:left;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;min-height:118px;color:#1A2E52">
+      <span style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#787774">Workflows</span><span style="width:8px;height:8px;border-radius:50%;background:#1A2E52"></span></span>
+      <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1">18</span>
+      <span style="font-size:12px;color:#787774">prompts, in your voice</span>
+    </button>
+  </div>
+
+  <!-- rhythms this week -->
+  <div id="rhythms" style="margin-top:24px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Rhythms this week</div>
+    <div style="font-size:12px;color:#787774">{{ rhyCountText }}</div>
+  </div>
+  <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px">
+    <sc-for list="{{ rhythmRows }}" as="r" hint-placeholder-count="5">
+      <button onClick="{{ r.toggle }}" style="display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid {{ r.border }};background:{{ r.bg }};color:{{ r.fg }};transition:all .16s cubic-bezier(.2,0,0,1)"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.dot }};flex:none"></span>{{ r.label }}</button>
+    </sc-for>
+  </div>
+
+  <!-- tasks -->
+  <div id="tasks" style="margin-top:24px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Tasks</div>
+    <div style="font-size:12px;color:#787774">swipe right to finish, left to drop</div>
+  </div>
+  <div style="margin-top:10px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:6px 6px 6px 14px;display:flex;align-items:center;gap:8px">
+    <input value="{{ taskDraft }}" onChange="{{ setTaskDraft }}" onKeyDown="{{ taskKey }}" placeholder="Add a task" style="flex:1;min-width:0;border:none;font-size:15px;padding:8px 0;background:transparent;color:#1A2E52">
+    <select value="{{ taskArea }}" onChange="{{ setTaskArea }}" style="border:1px solid #E4E3DE;border-radius:6px;padding:6px 8px;font-size:12px;color:#1A2E52;background:#FAFAF9;max-width:100px">
+      <sc-for list="{{ areaOptions }}" as="a" hint-placeholder-count="0"><option value="{{ a.value }}">{{ a.label }}</option></sc-for>
+    </select>
+    <label style="position:relative;display:inline-flex;align-items:center;border:1px solid #E4E3DE;border-radius:6px;padding:0 8px;height:32px;font-size:12px;font-weight:600;color:{{ dueFg }};background:#FAFAF9;cursor:pointer;white-space:nowrap">{{ dueLabel }}<input type="date" value="{{ taskDue }}" onChange="{{ setTaskDue }}" aria-label="Due date" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer"></label>
+    <button onClick="{{ addTask }}" style="width:34px;height:34px;border-radius:6px;background:#1A2E52;color:#fff;border:none;font-size:20px;line-height:1;cursor:pointer;flex:none">+</button>
+  </div>
+  <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ taskRows }}" as="t" hint-placeholder-count="0">
+      <div style="position:relative;border-radius:10px;overflow:hidden;touch-action:pan-y">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:{{ t.bgSwipe }};color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px"><span>Done</span><span>Drop</span></div>
+        <div data-id="{{ t.id }}" onPointerDown="{{ swipeStart }}" onPointerMove="{{ swipeMove }}" onPointerUp="{{ swipeEnd }}" onPointerCancel="{{ swipeEnd }}" style="position:relative;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:12px 14px;transform:translateX({{ t.dx }}px);transition:{{ t.trans }};user-select:none;cursor:grab">
+          <button onClick="{{ t.toggle }}" aria-label="Complete" style="width:24px;height:24px;border-radius:50%;flex:none;cursor:pointer;border:2px solid {{ t.checkBorder }};background:{{ t.checkBg }};display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;line-height:1">{{ t.checkMark }}</button>
+          <span style="flex:1;min-width:0;font-size:14.5px;line-height:1.35;color:{{ t.fg }};text-decoration:{{ t.deco }}">{{ t.text }}</span>
+          <span style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:{{ t.areaColor }}">{{ t.area }}</span><span style="font-size:11px;font-weight:600;color:{{ t.dueColor }}">{{ t.dueText }}</span></span>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <!-- rocks -->
+  <div id="rocks" style="margin-top:24px;display:flex;align-items:baseline;justify-content:space-between">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Rocks · {{ quarter }}</div>
+    <div style="font-size:12px;color:#787774">three per area, max</div>
+  </div>
+  <div style="margin-top:10px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:6px 6px 6px 14px;display:flex;align-items:center;gap:8px">
+    <input value="{{ rockDraft }}" onChange="{{ setRockDraft }}" onKeyDown="{{ rockKey }}" placeholder="What must be true by quarter's end?" style="flex:1;min-width:0;border:none;font-size:15px;padding:8px 0;background:transparent;color:#1A2E52">
+    <select value="{{ rockArea }}" onChange="{{ setRockArea }}" style="border:1px solid #E4E3DE;border-radius:6px;padding:6px 8px;font-size:12px;color:#1A2E52;background:#FAFAF9;max-width:100px">
+      <sc-for list="{{ areaOptions }}" as="a" hint-placeholder-count="0"><option value="{{ a.value }}">{{ a.label }}</option></sc-for>
+    </select>
+    <button onClick="{{ addRock }}" style="width:34px;height:34px;border-radius:6px;background:#1A2E52;color:#fff;border:none;font-size:20px;line-height:1;cursor:pointer;flex:none">+</button>
+  </div>
+  <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ rockRows }}" as="r" hint-placeholder-count="0">
+      <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:12px 14px">
+        <button onClick="{{ r.toggle }}" aria-label="Complete" style="width:24px;height:24px;border-radius:6px;flex:none;cursor:pointer;border:2px solid {{ r.checkBorder }};background:{{ r.checkBg }};color:#fff;font-size:13px;line-height:1">{{ r.checkMark }}</button>
+        <span style="flex:1;min-width:0;font-size:14.5px;line-height:1.35;color:{{ r.fg }};text-decoration:{{ r.deco }}">{{ r.text }}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:{{ r.areaColor }}">{{ r.area }}</span>
+        <button onClick="{{ r.remove }}" aria-label="Remove" style="border:none;background:none;color:#B4B7BB;font-size:18px;cursor:pointer;padding:0 2px">×</button>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ===== CAPTURE + LIBRARY ===== -->
+<sc-if value="{{ isCapture }}" hint-placeholder-val="{{ false }}">
+<div style="padding:8px 20px 0;animation:rise .28s cubic-bezier(.2,0,0,1)">
+  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E15628">Second brain</div>
+  <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;margin:6px 0 0;color:#1A2E52">Capture</h1>
+  <div style="margin-top:16px;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:16px">
+    <textarea value="{{ capDraft }}" onChange="{{ setCapDraft }}" onKeyDown="{{ capKey }}" rows="3" placeholder="An idea, a quote, a name, a nudge from God..." style="width:100%;border:none;resize:none;font-size:17px;line-height:1.45;color:#1A2E52;background:transparent"></textarea>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+      <sc-for list="{{ capTags }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.toggle }}" style="border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button></sc-for>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
+      <span style="font-size:12px;color:#9B9A97">{{ capHint }}</span>
+      <span style="display:flex;gap:8px;align-items:center">
+        <button onClick="{{ voiceToggle }}" aria-label="Voice capture" style="width:40px;height:40px;border-radius:50%;border:1px solid {{ voiceBorder }};background:{{ voiceBg }};color:{{ voiceFg }};cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s"><span style="width:12px;height:12px;border-radius:{{ voiceShape }};background:currentColor;display:block"></span></button>
+        <button onClick="{{ saveCapture }}" style="border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:14px;padding:10px 20px;cursor:pointer">Save</button>
+      </span>
+    </div>
+    <sc-if value="{{ voiceOn }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;font-size:12.5px;color:#E15628;font-weight:600;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:#E15628;animation:dotpulse 1.2s ease-in-out infinite"></span>{{ voiceStatus }}</div></sc-if>
+    <sc-if value="{{ voiceClip }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:#787774"><span style="width:8px;height:8px;border-radius:50%;background:#346538"></span>Audio clip attached ({{ voiceClipLen }}). Saved with this note.</div></sc-if>
+  </div>
+  <div style="margin-top:26px;display:flex;align-items:center;gap:10px">
+    <input value="{{ libQuery }}" onChange="{{ setLibQuery }}" placeholder="Search your library" style="flex:1;border:1px solid #E4E3DE;border-radius:6px;padding:10px 14px;font-size:14px;background:#fff;color:#1A2E52">
+    <span style="font-size:12px;color:#787774;flex:none">{{ libCount }}</span>
+  </div>
+  <div style="margin-top:10px;display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">
+    <sc-for list="{{ libChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.toggle }}" style="flex:none;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button></sc-for>
+  </div>
+  <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ libRows }}" as="it" hint-placeholder-count="0">
+      <div style="background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:12px 14px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ it.color }}"></span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#1A2E52">{{ it.tag }}</span><span style="font-size:11px;color:#9B9A97">{{ it.when }}</span><button onClick="{{ it.toTask }}" style="margin-left:auto;border:1px solid #E4E3DE;background:#fff;border-radius:6px;font-size:11px;font-weight:600;color:#1A2E52;padding:4px 10px;cursor:pointer">Make a task</button><button onClick="{{ it.remove }}" aria-label="Remove" style="border:none;background:none;color:#B4B7BB;font-size:18px;cursor:pointer;padding:0 2px">×</button></div>
+        <p style="margin:8px 0 0;font-size:14.5px;line-height:1.5;color:#2B3142;white-space:pre-wrap">{{ it.text }}</p>
+        <sc-if value="{{ it.hasAudio }}" hint-placeholder-val="{{ false }}"><audio controls="{{ true }}" preload="none" style="width:100%;height:36px;margin-top:8px"><source src="{{ it.audio }}"></source></audio></sc-if>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ libEmpty }}" hint-placeholder-val="{{ true }}">
+    <div style="margin-top:12px;padding:28px 16px;text-align:center;color:#787774;font-size:13.5px;line-height:1.5"><div style="width:10px;height:10px;border-radius:50%;background:#E15628;margin:0 auto 12px;animation:dotpulse 2.4s ease-in-out infinite"></div>{{ libEmptyMsg }}</div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ===== PEOPLE ===== -->
+<sc-if value="{{ isPeople }}" hint-placeholder-val="{{ false }}">
+<div style="padding:8px 20px 0;animation:rise .28s cubic-bezier(.2,0,0,1)">
+  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E15628">Shepherding and coaching</div>
+  <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;margin:6px 0 0;color:#1A2E52">People</h1>
+  <p style="margin:8px 0 0;font-size:13.5px;color:#787774;line-height:1.5">Log a touch when you connect. The list tells you who is going quiet.</p>
+  <div style="margin-top:16px;background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:14px">
+    <input value="{{ pplName }}" onChange="{{ setPplName }}" placeholder="Name" style="width:100%;border:none;font-size:17px;font-weight:500;color:#1A2E52;background:transparent;padding:4px 0">
+    <input value="{{ pplNote }}" onChange="{{ setPplNote }}" placeholder="Context or note (optional)" style="width:100%;border:none;font-size:14px;color:#2B3142;background:transparent;padding:4px 0 10px;border-bottom:1px solid #F3F2EF">
+    <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+      <select value="{{ pplRole }}" onChange="{{ setPplRole }}" style="flex:1;min-width:0;border:1px solid #E4E3DE;border-radius:6px;padding:8px 10px;font-size:12.5px;color:#1A2E52;background:#FAFAF9">
+        <option value="">Role</option><option>Member</option><option>Planter</option><option>Leader</option><option>Neighbor</option><option>Friend</option><option>Family</option>
+      </select>
+      <select value="{{ pplCad }}" onChange="{{ setPplCad }}" style="flex:1;min-width:0;border:1px solid #E4E3DE;border-radius:6px;padding:8px 10px;font-size:12.5px;color:#1A2E52;background:#FAFAF9">
+        <option value="">Check in</option><option value="7">Weekly</option><option value="14">Every 2 weeks</option><option value="30">Monthly</option><option value="60">Every 2 months</option><option value="90">Quarterly</option>
+      </select>
+      <button onClick="{{ addPerson }}" style="width:34px;height:34px;border-radius:6px;background:#1A2E52;color:#fff;border:none;font-size:20px;line-height:1;cursor:pointer;flex:none">+</button>
+    </div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">
+    <sc-for list="{{ pplChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.toggle }}" style="flex:none;border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button></sc-for>
+  </div>
+  <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{ pplRows }}" as="p" hint-placeholder-count="0">
+      <div style="background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start">
+        <span style="width:42px;height:42px;border-radius:50%;flex:none;background:{{ p.color }};color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px">{{ p.initials }}</span>
+        <span style="flex:1;min-width:0">
+          <span style="display:flex;align-items:center;gap:8px"><span style="font-size:15.5px;font-weight:600;color:#1A2E52">{{ p.name }}</span><span style="font-size:11px;color:#9B9A97">{{ p.role }}</span><span style="margin-left:auto;font-size:11px;font-weight:700;color:{{ p.stColor }}">{{ p.status }}</span></span>
+          <sc-if value="{{ p.hasNote }}" hint-placeholder-val="{{ false }}"><span style="display:block;font-size:13px;color:#787774;margin-top:3px;line-height:1.45">{{ p.note }}</span></sc-if>
+          <span style="display:flex;align-items:center;gap:8px;margin-top:10px">
+            <button onClick="{{ p.touch }}" style="border-radius:6px;border:1px solid #E4E3DE;background:#fff;color:#1A2E52;font-size:12px;font-weight:600;padding:6px 12px;cursor:pointer">Touched today</button>
+            <span style="font-size:11px;color:#9B9A97">{{ p.last }}</span>
+            <button onClick="{{ p.remove }}" aria-label="Remove" style="margin-left:auto;border:none;background:none;color:#B4B7BB;font-size:18px;cursor:pointer;padding:0 2px">×</button>
+          </span>
+        </span>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ pplEmpty }}" hint-placeholder-val="{{ true }}">
+    <div style="margin-top:12px;padding:28px 16px;text-align:center;color:#787774;font-size:13.5px;line-height:1.5"><div style="width:10px;height:10px;border-radius:50%;background:#3D7C82;margin:0 auto 12px"></div>{{ pplEmptyMsg }}</div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ===== SOUL ===== -->
+<sc-if value="{{ isSoul }}" hint-placeholder-val="{{ false }}">
+<div style="padding:8px 20px 0;animation:rise .28s cubic-bezier(.2,0,0,1)">
+  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E15628">{{ soulEyebrow }}</div>
+  <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;margin:6px 0 0;color:#1A2E52">{{ soulTitle }}</h1>
+  <div style="margin-top:16px;display:flex;gap:14px;border-bottom:1px solid #E4E3DE;overflow-x:auto">
+    <sc-for list="{{ soulSegs }}" as="sg" hint-placeholder-count="4"><button onClick="{{ sg.go }}" style="border:none;background:none;padding:8px 0 10px;font-size:13px;font-weight:600;cursor:pointer;color:{{ sg.fg }};border-bottom:2px solid {{ sg.line }};margin-bottom:-1px">{{ sg.label }}</button></sc-for>
+  </div>
+  <sc-if value="{{ segReflect }}" hint-placeholder-val="{{ true }}">
+    <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">A few honest lines before God. Saved by day so you can look back and see how he has been at work.</p>
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ jrnFields }}" as="f" hint-placeholder-count="5">
+        <div style="background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ f.color }}"></span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#1A2E52">{{ f.label }}</span></div>
+          <textarea value="{{ f.value }}" onChange="{{ f.set }}" rows="2" placeholder="{{ f.ph }}" style="width:100%;border:none;resize:none;font-size:15px;line-height:1.5;color:#2B3142;background:transparent;margin-top:6px"></textarea>
+        </div>
+      </sc-for>
+    </div>
+    <button onClick="{{ saveJournal }}" style="margin-top:12px;width:100%;border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:15px;padding:14px;cursor:pointer">{{ jrnSaveLabel }}</button>
+    <div style="margin-top:28px;display:flex;align-items:baseline;justify-content:space-between"><div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Past reflections</div><div style="font-size:12px;color:#787774">{{ jrnPastCount }}</div></div>
+    <div style="margin-top:6px">
+      <sc-for list="{{ jrnPast }}" as="e" hint-placeholder-count="0">
+        <div style="border-bottom:1px solid #E4E3DE">
+          <button onClick="{{ e.toggle }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:14px 0;border:none;background:none;cursor:pointer;text-align:left"><span style="flex:1;font-size:14.5px;font-weight:600;color:#1A2E52">{{ e.date }}</span><span style="font-size:11px;color:#9B9A97">{{ e.count }}</span><span style="color:#9B9A97;font-size:18px;line-height:1;width:14px;text-align:center">{{ e.chev }}</span></button>
+          <sc-if value="{{ e.open }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:0 0 16px;display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ e.parts }}" as="p" hint-placeholder-count="0"><div><div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#E15628">{{ p.label }}</div><p style="margin:3px 0 0;font-size:14px;line-height:1.6;color:#2B3142;white-space:pre-wrap">{{ p.text }}</p></div></sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ jrnNone }}" hint-placeholder-val="{{ true }}"><p style="margin:14px 0 0;font-size:13.5px;color:#9B9A97;line-height:1.6">Nothing yet. Write a few lines above and save; they gather here.</p></sc-if>
+  </sc-if>
+  <sc-if value="{{ segPray }}" hint-placeholder-val="{{ false }}">
+    <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">What people have entrusted to you. Pray through the list and mark what God answers.</p>
+    <div style="margin-top:14px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:14px">
+      <input value="{{ prayName }}" onChange="{{ setPrayName }}" placeholder="Who shared this?" style="width:100%;border:none;font-size:16px;font-weight:500;color:#1A2E52;background:transparent;padding:4px 0">
+      <textarea value="{{ prayText }}" onChange="{{ setPrayText }}" rows="2" placeholder="The request" style="width:100%;border:none;resize:none;font-size:14.5px;line-height:1.5;color:#2B3142;background:transparent;padding:4px 0 10px;border-bottom:1px solid #F3F2EF"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+        <select value="{{ prayArea }}" onChange="{{ setPrayArea }}" style="flex:1;border:1px solid #E4E3DE;border-radius:6px;padding:8px 10px;font-size:12.5px;color:#1A2E52;background:#FAFAF9"><sc-for list="{{ areaOptions }}" as="a" hint-placeholder-count="0"><option value="{{ a.value }}">{{ a.label }}</option></sc-for></select>
+        <button onClick="{{ addPrayer }}" style="width:34px;height:34px;border-radius:6px;background:#1A2E52;color:#fff;border:none;font-size:20px;line-height:1;cursor:pointer;flex:none">+</button>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">
+      <sc-for list="{{ prayChips }}" as="c" hint-placeholder-count="2"><button onClick="{{ c.toggle }}" style="flex:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button></sc-for>
+    </div>
+    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ prayRows }}" as="p" hint-placeholder-count="0">
+        <div style="background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ p.color }}"></span><span style="font-size:15px;font-weight:600;color:#1A2E52">{{ p.name }}</span><span style="font-size:11px;color:#9B9A97">{{ p.when }}</span><span style="margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:{{ p.color }}">{{ p.area }}</span></div>
+          <p style="margin:8px 0 0;font-size:14.5px;line-height:1.6;color:{{ p.fg }};white-space:pre-wrap">{{ p.text }}</p>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:10px">
+            <button onClick="{{ p.toggle }}" style="border-radius:999px;border:1px solid {{ p.ansBorder }};background:{{ p.ansBg }};color:{{ p.ansFg }};font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:5px 11px;cursor:pointer">{{ p.ansLabel }}</button>
+            <button onClick="{{ p.remove }}" aria-label="Remove" style="margin-left:auto;border:none;background:none;color:#B4B7BB;font-size:18px;cursor:pointer;padding:0 2px">×</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ prayNone }}" hint-placeholder-val="{{ true }}"><p style="margin:14px 0 0;font-size:13.5px;color:#9B9A97;line-height:1.6">{{ prayNoneMsg }}</p></sc-if>
+  </sc-if>
+  <sc-if value="{{ segReview }}" hint-placeholder-val="{{ false }}">
+    <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">Fifteen minutes, once a week. Look back with honesty, look ahead with intention.</p>
+    <div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #E4E3DE;border-radius:10px;overflow:hidden;background:#fff">
+      <sc-for list="{{ revSnap }}" as="sn" hint-placeholder-count="3"><div style="padding:12px 14px;border-right:1px solid #E4E3DE"><div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;line-height:1;color:{{ sn.color }}">{{ sn.n }}</div><div style="font-size:11px;color:#787774;margin-top:4px;line-height:1.3">{{ sn.label }}</div></div></sc-for>
+    </div>
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ revFields }}" as="f" hint-placeholder-count="4">
+        <div style="background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ f.color }}"></span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#1A2E52">{{ f.label }}</span></div>
+          <textarea value="{{ f.value }}" onChange="{{ f.set }}" rows="2" placeholder="{{ f.ph }}" style="width:100%;border:none;resize:none;font-size:15px;line-height:1.5;color:#2B3142;background:transparent;margin-top:6px"></textarea>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ aiReviewOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ aiReviewRun }}" style="margin-top:12px;width:100%;border-radius:6px;border:1px solid #D6E0F0;background:#EDF2FA;color:#1A2E52;font-weight:600;font-size:14px;padding:12px;cursor:pointer">{{ aiReviewBtn }}</button><div style="margin-top:8px;font-size:12.5px;color:#787774;line-height:1.5">{{ aiReviewMsg }}</div></sc-if>
+    <button onClick="{{ saveReview }}" style="margin-top:12px;width:100%;border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:15px;padding:14px;cursor:pointer">{{ revSaveLabel }}</button>
+    <div style="margin-top:28px;display:flex;align-items:baseline;justify-content:space-between"><div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Past reviews</div><div style="font-size:12px;color:#787774">{{ revPastCount }}</div></div>
+    <div style="margin-top:6px">
+      <sc-for list="{{ revPast }}" as="e" hint-placeholder-count="0">
+        <div style="border-bottom:1px solid #E4E3DE">
+          <button onClick="{{ e.toggle }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:14px 0;border:none;background:none;cursor:pointer;text-align:left"><span style="flex:1;font-size:14.5px;font-weight:600;color:#1A2E52">{{ e.date }}</span><span style="color:#9B9A97;font-size:18px;line-height:1;width:14px;text-align:center">{{ e.chev }}</span></button>
+          <sc-if value="{{ e.open }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:0 0 16px;display:flex;flex-direction:column;gap:10px">
+              <sc-for list="{{ e.parts }}" as="p" hint-placeholder-count="0"><div><div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#E15628">{{ p.label }}</div><p style="margin:3px 0 0;font-size:14px;line-height:1.6;color:#2B3142;white-space:pre-wrap">{{ p.text }}</p></div></sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ revNone }}" hint-placeholder-val="{{ true }}"><p style="margin:14px 0 0;font-size:13.5px;color:#9B9A97;line-height:1.6">No reviews yet. Your first one takes fifteen minutes.</p></sc-if>
+  </sc-if>
+
+  <sc-if value="{{ segQuarter }}" hint-placeholder-val="{{ false }}">
+    <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">{{ qtrIntro }}</p>
+    <div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #E4E3DE;border-radius:10px;overflow:hidden;background:#fff">
+      <sc-for list="{{ qtrSnap }}" as="sn" hint-placeholder-count="3"><div style="padding:12px 14px;border-right:1px solid #E4E3DE"><div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;line-height:1;color:#1A2E52">{{ sn.n }}</div><div style="font-size:11px;color:#787774;margin-top:4px;line-height:1.3">{{ sn.label }}</div></div></sc-for>
+    </div>
+    <div style="margin-top:22px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Rocks from {{ qtrName }}</div>
+    <p style="margin:2px 0 0;font-size:12.5px;color:#9B9A97;line-height:1.5">Each one gets a verdict: done, carry into next quarter, or release on purpose.</p>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ qtrRocks }}" as="r" hint-placeholder-count="0">
+        <div style="background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:12px 14px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ r.areaColor }}"></span><span style="flex:1;font-size:14.5px;color:#1A2E52;line-height:1.35;text-decoration:{{ r.deco }}">{{ r.text }}</span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:{{ r.areaColor }}">{{ r.area }}</span></div>
+          <div style="display:flex;gap:6px;margin-top:10px">
+            <sc-for list="{{ r.verdicts }}" as="v" hint-placeholder-count="3"><button onClick="{{ v.pick }}" style="flex:1;border-radius:6px;padding:7px 4px;font-size:11.5px;font-weight:600;cursor:pointer;border:1px solid {{ v.border }};background:{{ v.bg }};color:{{ v.fg }}">{{ v.label }}</button></sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ qtrNoRocks }}" hint-placeholder-val="{{ true }}"><p style="margin:10px 0 0;font-size:13px;color:#9B9A97;line-height:1.6">No rocks were set for {{ qtrName }}.</p></sc-if>
+    <div style="margin-top:22px;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ qtrFields }}" as="f" hint-placeholder-count="4">
+        <div style="background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ f.color }}"></span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#1A2E52">{{ f.label }}</span></div>
+          <textarea value="{{ f.value }}" onChange="{{ f.set }}" rows="2" placeholder="{{ f.ph }}" style="width:100%;border:none;resize:none;font-size:15px;line-height:1.5;color:#2B3142;background:transparent;margin-top:6px"></textarea>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ aiReviewOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ aiQtrRun }}" style="margin-top:12px;width:100%;border-radius:6px;border:1px solid #D6E0F0;background:#EDF2FA;color:#1A2E52;font-weight:600;font-size:14px;padding:12px;cursor:pointer">{{ aiQtrBtn }}</button><div style="margin-top:8px;font-size:12.5px;color:#787774;line-height:1.5">{{ aiQtrMsg }}</div></sc-if>
+    <button onClick="{{ saveQuarter }}" style="margin-top:12px;width:100%;border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:15px;padding:14px;cursor:pointer">{{ qtrSaveLabel }}</button>
+    <div style="margin-top:28px;display:flex;align-items:baseline;justify-content:space-between"><div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Past quarters</div><div style="font-size:12px;color:#787774">{{ qtrPastCount }}</div></div>
+    <div style="margin-top:6px">
+      <sc-for list="{{ qtrPast }}" as="e" hint-placeholder-count="0">
+        <div style="border-bottom:1px solid #E4E3DE">
+          <button onClick="{{ e.toggle }}" style="width:100%;display:flex;align-items:center;gap:10px;padding:14px 0;border:none;background:none;cursor:pointer;text-align:left"><span style="flex:1;font-size:14.5px;font-weight:600;color:#1A2E52">{{ e.date }}</span><span style="color:#9B9A97;font-size:18px;line-height:1;width:14px;text-align:center">{{ e.chev }}</span></button>
+          <sc-if value="{{ e.open }}" hint-placeholder-val="{{ false }}"><div style="padding:0 0 16px;display:flex;flex-direction:column;gap:10px"><sc-for list="{{ e.parts }}" as="p" hint-placeholder-count="0"><div><div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#E15628">{{ p.label }}</div><p style="margin:3px 0 0;font-size:14px;line-height:1.6;color:#2B3142;white-space:pre-wrap">{{ p.text }}</p></div></sc-for></div></sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ qtrNone }}" hint-placeholder-val="{{ true }}"><p style="margin:14px 0 0;font-size:13.5px;color:#9B9A97;line-height:1.6">Your first quarterly review will land here.</p></sc-if>
+  </sc-if>
+
+  <sc-if value="{{ segRule }}" hint-placeholder-val="{{ false }}">
+    <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">A trellis, not a cage. Principles that name who you are becoming, and practices that train your days toward Jesus.</p>
+    <div style="margin-top:14px;display:flex;gap:6px;flex-wrap:wrap">
+      <span style="border-radius:999px;padding:5px 11px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;background:#FDF1EB;color:#A53A16">Be with Jesus</span><span style="border-radius:999px;padding:5px 11px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;background:#EDF2FA;color:#1A2E52">Do what Jesus did</span><span style="border-radius:999px;padding:5px 11px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;background:#EDF3EC;color:#346538">Become like Jesus</span>
+    </div>
+    <div style="margin-top:24px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">My life principles</div>
+    <div style="margin-top:4px">
+      <sc-for list="{{ principles }}" as="p" hint-placeholder-count="7">
+        <div style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #E4E3DE">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#E15628;width:18px;flex:none;line-height:1.2">{{ p.n }}</span>
+          <span style="min-width:0"><span style="display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#1A2E52;line-height:1.2">{{ p.title }}</span><span style="display:block;font-size:13.5px;color:#787774;line-height:1.55;margin-top:3px">{{ p.desc }}</span></span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:28px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Spiritual practices</div>
+    <p style="margin:4px 0 0;font-size:13px;color:#9B9A97;line-height:1.5">Specific and doable beats ambitious and vague. Track a weekly practice to add it to your Rhythms.</p>
+    <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ practices }}" as="pr" hint-placeholder-count="9">
+        <div style="background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:14px 16px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#1A2E52">{{ pr.name }}</div>
+          <p style="margin:3px 0 10px;font-size:13px;color:#787774;line-height:1.55;font-style:italic">{{ pr.fr }}</p>
+          <sc-for list="{{ pr.items }}" as="it" hint-placeholder-count="0">
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-top:1px solid #F3F2EF">
+              <span style="border-radius:999px;padding:3px 8px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:#EDF2FA;color:#1A2E52;flex:none">{{ it.cad }}</span>
+              <span style="flex:1;min-width:0;font-size:13.5px;line-height:1.4;color:#2B3142">{{ it.text }}</span>
+              <sc-if value="{{ it.weekly }}" hint-placeholder-val="{{ false }}"><button onClick="{{ it.track }}" style="border-radius:999px;border:1px solid {{ it.tBorder }};background:{{ it.tBg }};color:{{ it.tFg }};font-size:10.5px;font-weight:600;padding:4px 9px;cursor:pointer">{{ it.tLabel }}</button></sc-if>
+              <button onClick="{{ it.remove }}" aria-label="Remove" style="border:none;background:none;color:#B4B7BB;font-size:17px;cursor:pointer;padding:0 2px">×</button>
+            </div>
+          </sc-for>
+          <div style="display:flex;gap:6px;border-top:1px solid #F3F2EF;padding-top:10px;margin-top:2px">
+            <input value="{{ pr.draft }}" onChange="{{ pr.setDraft }}" onKeyDown="{{ pr.key }}" placeholder="Add a practice" style="flex:1;min-width:0;border:1px solid #E4E3DE;border-radius:6px;padding:8px 10px;font-size:13px;color:#1A2E52;background:#FAFAF9">
+            <select value="{{ pr.cad }}" onChange="{{ pr.setCad }}" style="border:1px solid #E4E3DE;border-radius:6px;padding:8px 6px;font-size:12px;color:#1A2E52;background:#FAFAF9"><option>Daily</option><option>Weekly</option><option>Monthly</option><option>Quarterly</option><option>Annually</option></select>
+            <button onClick="{{ pr.add }}" style="width:34px;height:34px;border-radius:6px;background:#1A2E52;color:#fff;border:none;font-size:20px;line-height:1;cursor:pointer;flex:none">+</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+<!-- ===== BRIEFING ===== -->
+<sc-if value="{{ isBrief }}" hint-placeholder-val="{{ false }}">
+<div style="padding:8px 20px 0;animation:rise .28s cubic-bezier(.2,0,0,1)">
+  <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E15628">{{ dateLong }}</div>
+  <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;margin:6px 0 0;color:#1A2E52">Briefing</h1>
+  <p style="margin:8px 0 0;font-size:14px;color:#787774;line-height:1.6">The latest across your world, in one scroll. Change the lens, save what's worth keeping.</p>
+  <div style="margin-top:14px;display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">
+    <sc-for list="{{ briefChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.toggle }}" style="flex:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button></sc-for>
+  </div>
+  <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between">
+    <span style="font-size:12px;color:#9B9A97">{{ briefStatus }}</span>
+    <button onClick="{{ briefRefresh }}" style="border:1px solid #E4E3DE;background:#fff;border-radius:6px;font-size:12px;font-weight:600;color:#1A2E52;padding:6px 12px;cursor:pointer">Refresh</button>
+  </div>
+  <div style="margin-top:6px">
+    <sc-for list="{{ briefRows }}" as="a" hint-placeholder-count="0">
+      <div style="padding:16px 0;border-bottom:1px solid #E4E3DE;animation:rise .3s cubic-bezier(.16,1,.3,1) both">
+        <div style="display:flex;align-items:center;gap:7px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#1A2E52"><span style="width:5px;height:5px;border-radius:50%;background:#E15628"></span>{{ a.src }}<span style="font-family:'DM Sans',sans-serif;font-weight:500;text-transform:none;letter-spacing:0;color:#9B9A97">{{ a.ago }}</span></div>
+        <a href="{{ a.link }}" target="_blank" rel="noopener" style="display:block;margin-top:6px;font-size:16px;font-weight:600;line-height:1.35;color:#1A2E52;text-decoration:none;text-wrap:pretty">{{ a.title }}</a>
+        <sc-if value="{{ a.hasDesc }}" hint-placeholder-val="{{ false }}"><p style="margin:5px 0 0;font-size:13px;line-height:1.55;color:#787774;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">{{ a.desc }}</p></sc-if>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button onClick="{{ a.save }}" style="border-radius:999px;border:1px solid {{ a.sBorder }};background:{{ a.sBg }};color:{{ a.sFg }};font-size:11px;font-weight:600;padding:5px 11px;cursor:pointer">{{ a.sLabel }}</button>
+          <sc-if value="{{ a.canRead }}" hint-placeholder-val="{{ true }}"><button onClick="{{ a.read }}" style="border-radius:999px;border:1px solid #E4E3DE;background:#fff;color:#787774;font-size:11px;font-weight:600;padding:5px 11px;cursor:pointer">Read</button></sc-if>
+          <button onClick="{{ a.toLib }}" style="border-radius:999px;border:1px solid #E4E3DE;background:#fff;color:#787774;font-size:11px;font-weight:600;padding:5px 11px;cursor:pointer">To library</button>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ briefEmpty }}" hint-placeholder-val="{{ true }}">
+    <div style="margin-top:12px;padding:32px 16px;text-align:center;color:#787774;font-size:13.5px;line-height:1.6"><div style="width:10px;height:10px;border-radius:50%;background:#E15628;margin:0 auto 12px;animation:{{ briefPulse }}"></div>{{ briefEmptyMsg }}</div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ===== SERMON PIPELINE ===== -->
+<sc-if value="{{ isSermons }}" hint-placeholder-val="{{ false }}">
+<div style="padding:8px 20px 0;animation:rise .28s cubic-bezier(.2,0,0,1)">
+  <button onClick="{{ closeSermons }}" style="border:none;background:none;padding:0;font-size:13px;font-weight:600;color:#787774;cursor:pointer;display:flex;align-items:center;gap:6px">← Today</button>
+  <div style="margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E15628">Preaching</div>
+  <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;margin:6px 0 0;color:#1A2E52">Sermons</h1>
+  <p style="margin:8px 0 0;font-size:14px;color:#787774;line-height:1.6">Text to pulpit to repurposed. Tap a stage to mark it done; the pipeline tracks what's left before Sunday.</p>
+  <div style="margin-top:16px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:14px">
+    <input value="{{ srmTitle }}" onChange="{{ setSrmTitle }}" placeholder="Sermon title or working title" style="width:100%;border:none;font-size:16px;font-weight:500;color:#1A2E52;background:transparent;padding:4px 0">
+    <input value="{{ srmText }}" onChange="{{ setSrmText }}" placeholder="Text (e.g. Luke 15:11-32)" style="width:100%;border:none;font-size:14px;color:#2B3142;background:transparent;padding:4px 0 10px;border-bottom:1px solid #F3F2EF">
+    <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+      <input value="{{ srmSeries }}" onChange="{{ setSrmSeries }}" placeholder="Series (optional)" style="flex:1;min-width:0;border:1px solid #E4E3DE;border-radius:6px;padding:8px 10px;font-size:12.5px;color:#1A2E52;background:#FAFAF9">
+      <label style="position:relative;display:inline-flex;align-items:center;border:1px solid #E4E3DE;border-radius:6px;padding:0 10px;height:34px;font-size:12px;font-weight:600;color:#1A2E52;background:#FAFAF9;cursor:pointer;white-space:nowrap">{{ srmDateLabel }}<input type="date" value="{{ srmDate }}" onChange="{{ setSrmDate }}" aria-label="Preach date" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer"></label>
+      <button onClick="{{ addSermon }}" style="width:34px;height:34px;border-radius:6px;background:#1A2E52;color:#fff;border:none;font-size:20px;line-height:1;cursor:pointer;flex:none">+</button>
+    </div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:6px"><sc-for list="{{ srmChips }}" as="c" hint-placeholder-count="2"><button onClick="{{ c.toggle }}" style="border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button></sc-for></div>
+  <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ srmRows }}" as="sm" hint-placeholder-count="0">
+      <div style="background:#fff;border:1px solid #E4E3DE;border-radius:12px;padding:14px 16px">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="flex:1;min-width:0"><span style="display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#E15628">{{ sm.text }}</span><span style="display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:21px;line-height:1.1;color:#1A2E52;margin-top:4px">{{ sm.title }}</span><span style="display:block;font-size:12px;color:#9B9A97;margin-top:4px">{{ sm.meta }}</span></span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:{{ sm.dColor }};line-height:1;text-align:right;flex:none">{{ sm.days }}<span style="display:block;font-family:'DM Sans',sans-serif;font-weight:500;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:#9B9A97;margin-top:3px">{{ sm.daysLabel }}</span></span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px">
+          <sc-for list="{{ sm.stages }}" as="st" hint-placeholder-count="8"><button onClick="{{ st.toggle }}" style="border-radius:6px;padding:8px 4px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid {{ st.border }};background:{{ st.bg }};color:{{ st.fg }};line-height:1.2;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .16s cubic-bezier(.2,0,0,1)"><span style="width:6px;height:6px;border-radius:50%;background:{{ st.dot }}"></span>{{ st.label }}</button></sc-for>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:12px">
+          <span style="font-size:12px;color:#787774;flex:1">{{ sm.nextLabel }}</span>
+          <sc-if value="{{ sm.canRepurpose }}" hint-placeholder-val="{{ false }}"><button onClick="{{ sm.repurpose }}" style="border-radius:999px;border:1px solid #E4E3DE;background:#fff;color:#1A2E52;font-size:11px;font-weight:600;padding:5px 11px;cursor:pointer">Workflows</button></sc-if>
+          <button onClick="{{ sm.remove }}" aria-label="Remove" style="border:none;background:none;color:#B4B7BB;font-size:18px;cursor:pointer;padding:0 2px">×</button>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ srmEmpty }}" hint-placeholder-val="{{ true }}"><p style="margin:14px 0 0;font-size:13.5px;color:#9B9A97;line-height:1.6">{{ srmEmptyMsg }}</p></sc-if>
+</div>
+</sc-if>
+
+<!-- ===== TASKS SCREEN (Asana detail) ===== -->
+<sc-if value="{{ isTasks }}" hint-placeholder-val="{{ false }}">
+<div style="padding:8px 20px 0;animation:rise .28s cubic-bezier(.2,0,0,1)">
+  <button onClick="{{ closeTasks }}" style="border:none;background:none;padding:0;font-size:13px;font-weight:600;color:#787774;cursor:pointer;display:flex;align-items:center;gap:6px">← Today</button>
+  <div style="margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E15628">Asana · {{ asanaUser }}</div>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+    <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;margin:6px 0 0;color:#1A2E52">Tasks</h1>
+    <button onClick="{{ asanaRefresh }}" style="border:1px solid #E4E3DE;background:#fff;border-radius:6px;font-size:12px;font-weight:600;color:#1A2E52;padding:6px 12px;cursor:pointer;margin-bottom:4px">{{ asanaRefreshLabel }}</button>
+  </div>
+  <sc-if value="{{ asanaError }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;background:#FDF1EB;border-radius:8px;padding:10px 14px;font-size:13px;color:#A53A16;line-height:1.5">{{ asanaErrorMsg }}</div></sc-if>
+  <sc-for list="{{ asanaSections }}" as="sec" hint-placeholder-count="3">
+    <div style="margin-top:24px;display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ sec.color }}"></span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">{{ sec.title }}</span><span style="font-size:12px;color:#787774;margin-left:auto">{{ sec.count }}</span></div>
+    <p style="margin:2px 0 0 16px;font-size:12px;color:#9B9A97">{{ sec.sub }}</p>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ sec.items }}" as="t" hint-placeholder-count="0">
+        <div style="display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:12px 14px;opacity:{{ t.op }};transition:opacity .25s">
+          <button onClick="{{ t.done }}" aria-label="Complete" style="width:24px;height:24px;border-radius:50%;flex:none;cursor:pointer;border:2px solid {{ t.cb }};background:{{ t.cbg }};color:#fff;font-size:13px;line-height:1;margin-top:1px">{{ t.mark }}</button>
+          <span style="flex:1;min-width:0"><span style="display:block;font-size:14.5px;line-height:1.35;color:#1A2E52">{{ t.name }}</span><span style="display:flex;gap:8px;margin-top:4px;font-size:12px;color:#9B9A97;flex-wrap:wrap"><span style="font-weight:600;color:{{ t.dueColor }}">{{ t.due }}</span><span>{{ t.project }}</span></span></span>
+          <a href="{{ t.url }}" target="_blank" rel="noopener" aria-label="Open in Asana" style="flex:none;font-size:12px;font-weight:600;color:#787774;text-decoration:none;border:1px solid #E4E3DE;border-radius:6px;padding:4px 8px">↗</a>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ sec.empty }}" hint-placeholder-val="{{ false }}"><p style="margin:10px 0 0 16px;font-size:13px;color:#9B9A97">{{ sec.emptyMsg }}</p></sc-if>
+  </sc-for>
+  <div style="margin-top:28px;display:flex;align-items:baseline;justify-content:space-between"><div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:#1A2E52">Later</div><div style="font-size:12px;color:#787774">{{ asanaLaterCount }}</div></div>
+  <div style="margin-top:6px">
+    <sc-for list="{{ asanaLater }}" as="t" hint-placeholder-count="0">
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #E4E3DE"><span style="flex:1;min-width:0;font-size:14px;color:#2B3142;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.name }}</span><span style="font-size:11.5px;color:#9B9A97;flex:none">{{ t.due }}</span></div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ===== SETTINGS SHEET ===== -->
+<sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeSettings }}" style="position:absolute;inset:0;z-index:60;background:rgba(26,46,82,.35)"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;top:72px;z-index:70;background:#FAFAF9;border-radius:16px 16px 0 0;display:flex;flex-direction:column;animation:sheet .3s cubic-bezier(.2,0,0,1)">
+  <div style="padding:10px 20px 0;display:flex;align-items:center;justify-content:space-between;flex:none">
+    <div style="width:36px;height:4px;border-radius:2px;background:#E4E3DE;position:absolute;left:50%;top:8px;transform:translateX(-50%)"></div>
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:30px;margin:14px 0 0;color:#1A2E52">Settings</h2>
+    <button onClick="{{ closeSettings }}" style="border:none;background:none;font-size:14px;font-weight:600;color:#1A2E52;cursor:pointer;margin-top:14px">Done</button>
+  </div>
+  <div style="flex:1;overflow:auto;padding:8px 20px 40px">
+    <div style="display:flex;gap:14px;border-bottom:1px solid #E4E3DE;margin-top:6px;overflow-x:auto;scrollbar-width:none">
+      <sc-for list="{{ setSegs }}" as="sg" hint-placeholder-count="4"><button onClick="{{ sg.go }}" style="border:none;background:none;padding:8px 0 10px;flex:none;white-space:nowrap;font-size:13px;font-weight:600;cursor:pointer;color:{{ sg.fg }};border-bottom:2px solid {{ sg.line }};margin-bottom:-1px">{{ sg.label }}</button></sc-for>
+    </div>
+
+    <sc-if value="{{ setAsana }}" hint-placeholder-val="{{ true }}">
+      <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">Asana → your avatar → Settings → Apps → Developer apps → Create personal access token. Paste it here. It stays on this device.</p>
+      <label style="display:block;margin-top:16px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Personal access token</label>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <input type="password" value="{{ asanaTokenDraft }}" onChange="{{ setAsanaToken }}" placeholder="1/1234…" style="flex:1;min-width:0;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+        <button onClick="{{ asanaConnect }}" style="border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:13.5px;padding:0 16px;cursor:pointer">{{ asanaConnectLabel }}</button>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:{{ asanaMsgColor }};line-height:1.5">{{ asanaMsg }}</div>
+      <label style="display:block;margin-top:22px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Significantly past due after</label>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <sc-for list="{{ pastDueOpts }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.toggle }}" style="border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid {{ o.border }};background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button></sc-for>
+      </div>
+      <sc-if value="{{ asanaConnected }}" hint-placeholder-val="{{ false }}"><button onClick="{{ asanaDisconnect }}" style="margin-top:24px;border:none;background:none;padding:0;font-size:13px;font-weight:600;color:#A53A16;cursor:pointer">Disconnect Asana</button></sc-if>
+    </sc-if>
+
+    <sc-if value="{{ setCal }}" hint-placeholder-val="{{ false }}">
+      <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">Paste each calendar's private subscribe link. Events merge into one agenda on Today.</p>
+      <sc-for list="{{ calRows }}" as="c" hint-placeholder-count="2">
+        <div style="margin-top:16px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ c.color }}"></span><span style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;color:#1A2E52">{{ c.name }}</span><span style="margin-left:auto;font-size:11px;font-weight:600;color:{{ c.stColor }}">{{ c.status }}</span></div>
+          <p style="margin:6px 0 0;font-size:12.5px;color:#9B9A97;line-height:1.5">{{ c.help }}</p>
+          <input value="{{ c.url }}" onChange="{{ c.set }}" placeholder="https://…/calendar.ics" style="margin-top:10px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:10px 12px;font-size:13px;background:#FAFAF9;color:#1A2E52">
+        </div>
+      </sc-for>
+      <button onClick="{{ calSave }}" style="margin-top:14px;width:100%;border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:14px;padding:13px;cursor:pointer">{{ calSaveLabel }}</button>
+      <div style="margin-top:10px;font-size:13px;color:#787774;line-height:1.5">{{ calMsg }}</div>
+    </sc-if>
+
+    <sc-if value="{{ setRem }}" hint-placeholder-val="{{ false }}">
+      <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">A nudge to pause. While Sam OS is open it reminds you itself; the reminder server sends texts and pushes even when it isn't.</p>
+      <div style="margin-top:14px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:4px 14px">
+        <sc-for list="{{ remRows }}" as="r" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #F3F2EF">
+            <span style="flex:1;min-width:0"><span style="display:block;font-size:14.5px;font-weight:500;color:#1A2E52">{{ r.label }}</span><span style="display:block;font-size:12px;color:#9B9A97;margin-top:2px">{{ r.sub }}</span></span>
+            <select value="{{ r.h }}" onChange="{{ r.setH }}" style="border:1px solid #E4E3DE;border-radius:6px;padding:6px 8px;font-size:12px;color:#1A2E52;background:#FAFAF9"><sc-for list="{{ hourOpts }}" as="o" hint-placeholder-count="0"><option value="{{ o.v }}">{{ o.label }}</option></sc-for></select>
+            <button onClick="{{ r.toggle }}" role="switch" aria-checked="{{ r.on }}" style="width:44px;height:26px;border-radius:999px;border:none;cursor:pointer;background:{{ r.swBg }};position:relative;transition:background .2s;flex:none"><span style="position:absolute;top:3px;left:{{ r.knob }};width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s cubic-bezier(.2,0,0,1)"></span></button>
+          </div>
+        </sc-for>
+      </div>
+      <label style="display:block;margin-top:22px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Channels</label>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <sc-for list="{{ chanOpts }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.toggle }}" style="border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid {{ o.border }};background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button></sc-for>
+      </div>
+      <label style="display:block;margin-top:18px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Phone for texts</label>
+      <input value="{{ phone }}" onChange="{{ setPhone }}" placeholder="+1 214 555 0100" style="margin-top:6px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+      <div style="margin-top:18px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:{{ installDot }};flex:none"></span><span style="flex:1;font-size:13px;color:#2B3142;line-height:1.45">{{ installState }}</span></div>
+      <label style="display:block;margin-top:18px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Reminder server URL</label>
+      <input value="{{ serverUrl }}" onChange="{{ setServerUrl }}" placeholder="https://sam-reminders.yourname.workers.dev" style="margin-top:6px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+      <label style="display:block;margin-top:14px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">VAPID public key</label>
+      <input value="{{ vapid }}" onChange="{{ setVapid }}" placeholder="From npx web-push generate-vapid-keys" style="margin-top:6px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:13px;background:#fff;color:#1A2E52">
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button onClick="{{ remEnablePush }}" style="flex:1;border-radius:6px;border:1px solid #E4E3DE;background:#fff;color:#1A2E52;font-weight:600;font-size:13.5px;padding:12px;cursor:pointer">{{ pushLabel }}</button>
+        <button onClick="{{ remRegister }}" style="flex:1;border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:13.5px;padding:12px;cursor:pointer">{{ regLabel }}</button>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:#787774;line-height:1.5">{{ remMsg }}</div>
+      <p style="margin:18px 0 0;font-size:12.5px;color:#9B9A97;line-height:1.6">No server yet? iPhone Shortcuts → Automation → Time of Day → Open Sam OS does the morning nudge with nothing to deploy.</p>
+    </sc-if>
+
+    <sc-if value="{{ setAi }}" hint-placeholder-val="{{ false }}">
+      <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">Claude reads your day (tasks, calendar, people going quiet, rocks, today's principle) and writes a short pastoral brief. On Sundays it can draft your weekly review from the week's data. The key stays on this device.</p>
+      <label style="display:block;margin-top:16px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Anthropic API key</label>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <input type="password" value="{{ aiKeyDraft }}" onChange="{{ setAiKey }}" placeholder="sk-ant-…" style="flex:1;min-width:0;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+        <button onClick="{{ aiSaveKey }}" style="border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:13.5px;padding:0 16px;cursor:pointer">{{ aiKeyBtn }}</button>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:{{ aiMsgColor }};line-height:1.5">{{ aiMsg }}</div>
+      <label style="display:block;margin-top:22px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Brief voice</label>
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+        <sc-for list="{{ aiVoiceOpts }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.toggle }}" style="border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid {{ o.border }};background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button></sc-for>
+      </div>
+      <label style="display:block;margin-top:22px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Auto-run</label>
+      <div style="display:flex;gap:6px;margin-top:8px"><sc-for list="{{ aiAutoOpts }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.toggle }}" style="border-radius:999px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid {{ o.border }};background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</button></sc-for></div>
+      <p style="margin:14px 0 0;font-size:12.5px;color:#9B9A97;line-height:1.6">Cost is roughly a cent per brief. Claude only sees what's on this screen, never your journal entries.</p>
+      <sc-if value="{{ aiHasKey }}" hint-placeholder-val="{{ false }}"><button onClick="{{ aiRemoveKey }}" style="margin-top:22px;border:none;background:none;padding:0;font-size:13px;font-weight:600;color:#A53A16;cursor:pointer">Remove key</button></sc-if>
+    </sc-if>
+
+    <sc-if value="{{ setPco }}" hint-placeholder-val="{{ false }}">
+      <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">Planning Center → your avatar → Developer → Personal Access Tokens → New. Paste the Application ID and Secret. Today will show last Sunday's giving, attendance, and first-time guests against the Sunday before.</p>
+      <label style="display:block;margin-top:16px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Application ID</label>
+      <input value="{{ pcoIdDraft }}" onChange="{{ setPcoId }}" placeholder="abc123…" style="margin-top:6px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+      <label style="display:block;margin-top:14px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Secret</label>
+      <input type="password" value="{{ pcoSecretDraft }}" onChange="{{ setPcoSecret }}" placeholder="…" style="margin-top:6px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+      <button onClick="{{ pcoConnect }}" style="margin-top:14px;width:100%;border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:14px;padding:13px;cursor:pointer">{{ pcoConnectLabel }}</button>
+      <div style="margin-top:10px;font-size:13px;color:{{ pcoMsgColor }};line-height:1.5">{{ pcoMsg }}</div>
+      <p style="margin:14px 0 0;font-size:12.5px;color:#9B9A97;line-height:1.6">Attendance comes from Check-Ins headcounts, guests from People created that week, giving from Giving donations. If Planning Center blocks browser requests, the reminder server can relay them; I'll wire that if it happens.</p>
+      <sc-if value="{{ pcoConnected }}" hint-placeholder-val="{{ false }}"><button onClick="{{ pcoDisconnect }}" style="margin-top:22px;border:none;background:none;padding:0;font-size:13px;font-weight:600;color:#A53A16;cursor:pointer">Disconnect Planning Center</button></sc-if>
+    </sc-if>
+
+    <sc-if value="{{ setSync }}" hint-placeholder-val="{{ false }}">
+      <p style="margin:16px 0 0;font-size:14px;color:#787774;line-height:1.6">Keep phone and laptop in step and back everything up. A free Supabase project does it; setup takes five minutes (server/SYNC.md).</p>
+      <div style="margin-top:16px;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:{{ syncDot }};flex:none"></span><span style="flex:1;font-size:13px;color:#2B3142;line-height:1.45">{{ syncState }}</span><sc-if value="{{ syncOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ syncNow }}" style="border:1px solid #E4E3DE;background:#fff;border-radius:6px;font-size:12px;font-weight:600;color:#1A2E52;padding:6px 12px;cursor:pointer">Sync now</button></sc-if></div>
+      <label style="display:block;margin-top:18px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Project URL</label>
+      <input value="{{ sbUrl }}" onChange="{{ setSbUrl }}" placeholder="https://xxxx.supabase.co" style="margin-top:6px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+      <label style="display:block;margin-top:14px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Anon public key</label>
+      <input type="password" value="{{ sbKey }}" onChange="{{ setSbKey }}" placeholder="eyJ…" style="margin-top:6px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+      <label style="display:block;margin-top:14px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Passphrase</label>
+      <input type="password" value="{{ sbPass }}" onChange="{{ setSbPass }}" placeholder="Same on every device" style="margin-top:6px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+      <button onClick="{{ syncConnect }}" style="margin-top:14px;width:100%;border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:14px;padding:13px;cursor:pointer">{{ syncConnectLabel }}</button>
+      <div style="margin-top:10px;font-size:13px;color:{{ syncMsgColor }};line-height:1.5">{{ syncMsg }}</div>
+      <sc-if value="{{ syncOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ syncDisconnect }}" style="margin-top:22px;border:none;background:none;padding:0;font-size:13px;font-weight:600;color:#A53A16;cursor:pointer">Disconnect (keeps local data)</button></sc-if>
+    </sc-if>
+
+    <sc-if value="{{ setProfile }}" hint-placeholder-val="{{ false }}">
+      <label style="display:block;margin-top:16px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#787774">Name</label>
+      <input value="{{ nameDraft }}" onChange="{{ setNameDraft }}" onBlur="{{ saveName }}" style="margin-top:6px;width:100%;border:1px solid #E4E3DE;border-radius:6px;padding:11px 12px;font-size:14px;background:#fff;color:#1A2E52">
+      <button onClick="{{ rerunSetup }}" style="margin-top:18px;border-radius:6px;border:1px solid #E4E3DE;background:#fff;color:#1A2E52;font-weight:600;font-size:13.5px;padding:11px 16px;cursor:pointer">Edit areas and rhythms</button>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<!-- ===== WORKFLOWS (pushed from Today) ===== -->
+<sc-if value="{{ isWork }}" hint-placeholder-val="{{ false }}">
+<div style="padding:8px 20px 0;animation:rise .28s cubic-bezier(.2,0,0,1)">
+  <button onClick="{{ closeWork }}" style="border:none;background:none;padding:0;font-size:13px;font-weight:600;color:#787774;cursor:pointer;display:flex;align-items:center;gap:6px">← Today</button>
+  <div style="margin-top:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E15628">Launchpad</div>
+  <h1 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:40px;line-height:1;margin:6px 0 0;color:#1A2E52">Workflows</h1>
+  <p style="margin:8px 0 0;font-size:14px;color:#787774;line-height:1.6">Tap one, copy the prompt, paste it into Claude. Each is written in your voice: CSB, no em dashes, your three roles.</p>
+  <div style="margin-top:14px;display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">
+    <sc-for list="{{ wfChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.toggle }}" style="flex:none;border-radius:999px;padding:6px 12px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button></sc-for>
+  </div>
+  <div style="margin-top:6px">
+    <sc-for list="{{ wfRows }}" as="w" hint-placeholder-count="0">
+      <div style="border-bottom:1px solid #E4E3DE">
+        <button onClick="{{ w.toggle }}" style="width:100%;display:flex;align-items:center;gap:12px;padding:15px 0;border:none;background:none;cursor:pointer;text-align:left">
+          <span style="flex:1;min-width:0"><span style="display:block;font-size:15.5px;font-weight:600;color:#1A2E52;line-height:1.3">{{ w.title }}</span><span style="display:block;font-size:12.5px;color:#787774;margin-top:2px">{{ w.desc }}</span></span>
+          <span style="color:#9B9A97;font-size:20px;line-height:1;width:14px;text-align:center">{{ w.chev }}</span>
+        </button>
+        <sc-if value="{{ w.open }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:0 0 16px">
+            <pre style="margin:0;background:#fff;border:1px solid #E4E3DE;border-radius:8px;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6;color:#2B3142;white-space:pre-wrap;max-height:220px;overflow:auto">{{ w.template }}</pre>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <button onClick="{{ w.copy }}" style="flex:1;border-radius:6px;border:none;background:{{ w.copyBg }};color:#fff;font-weight:600;font-size:13.5px;padding:11px;cursor:pointer">{{ w.copyLabel }}</button>
+              <a href="https://claude.ai/new" target="_blank" rel="noopener" style="flex:1;border-radius:6px;border:1px solid #E4E3DE;background:#fff;color:#1A2E52;font-weight:600;font-size:13.5px;padding:11px;text-align:center;text-decoration:none">Open Claude</a>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+</div>
+
+<!-- ===== TAB BAR ===== -->
+<div style="position:absolute;left:0;right:0;bottom:0;padding:10px 12px 30px;background:#fff;border-top:1px solid #E4E3DE;display:grid;grid-template-columns:1fr 1fr 72px 1fr 1fr;align-items:end;z-index:30">
+  <sc-for list="{{ tabsLeft }}" as="tb" hint-placeholder-count="2">
+    <button onClick="{{ tb.go }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;border:none;background:none;cursor:pointer;color:{{ tb.color }};font-size:10.5px;font-weight:600;letter-spacing:.02em"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;line-height:1;letter-spacing:.02em">{{ tb.glyph }}</span>{{ tb.label }}<span style="width:5px;height:5px;border-radius:50%;background:#E15628;opacity:{{ tb.dotOp }}"></span></button>
+  </sc-for>
+  <button onClick="{{ goCapture }}" aria-label="Capture" style="width:48px;height:48px;border-radius:8px;margin:0 auto 4px;background:{{ captureBg }};border:none;color:#fff;font-size:28px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .16s cubic-bezier(.2,0,0,1), background .16s;transform:{{ captureTf }}">+</button>
+  <sc-for list="{{ tabsRight }}" as="tb" hint-placeholder-count="2">
+    <button onClick="{{ tb.go }}" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;border:none;background:none;cursor:pointer;color:{{ tb.color }};font-size:10.5px;font-weight:600;letter-spacing:.02em"><span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;line-height:1;letter-spacing:.02em">{{ tb.glyph }}</span>{{ tb.label }}<span style="width:5px;height:5px;border-radius:50%;background:#E15628;opacity:{{ tb.dotOp }}"></span></button>
+  </sc-for>
+</div>
+
+<!-- touch prompt (meeting with someone on People just ended) -->
+<sc-if value="{{ touchOn }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:16px;right:16px;bottom:112px;z-index:41;background:#1A2E52;color:#fff;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;animation:popin .25s cubic-bezier(.2,0,0,1)">
+  <span style="width:36px;height:36px;border-radius:50%;background:#3D7C82;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;flex:none">{{ touchInitials }}</span>
+  <span style="flex:1;min-width:0;font-size:13px;line-height:1.45"><span style="display:block;font-weight:600">{{ touchTitle }}</span><span style="display:block;color:#B9C3D6;font-size:12px">{{ touchSub }}</span></span>
+  <button onClick="{{ touchLog }}" style="border-radius:6px;border:none;background:#E15628;color:#fff;font-weight:600;font-size:12.5px;padding:8px 12px;cursor:pointer;flex:none">Log touch</button>
+  <button onClick="{{ touchSkip }}" aria-label="Skip" style="border:none;background:none;color:#B9C3D6;font-size:18px;cursor:pointer;padding:0 2px">×</button>
+</div>
+</sc-if>
+
+<!-- install banner -->
+<sc-if value="{{ installOn }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:16px;right:16px;bottom:112px;z-index:39;background:#fff;border:1px solid #E4E3DE;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;animation:popin .25s cubic-bezier(.2,0,0,1)">
+  <span style="width:8px;height:8px;border-radius:50%;background:#E15628;flex:none"></span>
+  <span style="flex:1;min-width:0;font-size:13px;line-height:1.45;color:#2B3142">{{ installMsg }}</span>
+  <sc-if value="{{ installCanPrompt }}" hint-placeholder-val="{{ false }}"><button onClick="{{ installNow }}" style="border-radius:6px;border:none;background:#1A2E52;color:#fff;font-weight:600;font-size:12.5px;padding:8px 12px;cursor:pointer;flex:none">Install</button></sc-if>
+  <button onClick="{{ installDismiss }}" aria-label="Dismiss" style="border:none;background:none;color:#B4B7BB;font-size:18px;cursor:pointer;padding:0 2px">×</button>
+</div>
+</sc-if>
+
+<!-- toast -->
+<sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:16px;right:16px;bottom:112px;z-index:40;background:#1A2E52;color:#fff;border-radius:8px;padding:12px 16px;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:12px;animation:popin .2s cubic-bezier(.2,0,0,1)"><span style="flex:1">{{ toastMsg }}</span><sc-if value="{{ toastUndo }}" hint-placeholder-val="{{ false }}"><button onClick="{{ doUndo }}" style="border:none;background:none;color:#FAA83D;font-weight:700;font-size:13.5px;cursor:pointer">Undo</button></sc-if></div>
+</sc-if>
+
+<!-- ===== FIRST RUN ===== -->
+<sc-if value="{{ onboarding }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:80;background:#1A2E52;color:#fff;display:flex;flex-direction:column;padding:80px 28px 48px;animation:popin .3s cubic-bezier(.2,0,0,1)">
+  <div style="display:flex;gap:6px;margin-bottom:28px">
+    <sc-for list="{{ obDots }}" as="d" hint-placeholder-count="3"><span style="height:6px;border-radius:999px;background:{{ d.bg }};width:{{ d.w }};transition:all .25s cubic-bezier(.2,0,0,1)"></span></sc-for>
+  </div>
+  <sc-if value="{{ ob0 }}" hint-placeholder-val="{{ true }}">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FAA83D">Welcome to Sam OS</div>
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:44px;line-height:1;margin:10px 0 14px;text-wrap:pretty">One scroll each morning, then go build.</h2>
+    <p style="font-size:15px;line-height:1.55;color:#D6E0F0;margin:0 0 28px">Tasks, people, rocks, rhythms, and a few honest lines before God. Everything stays on this device.</p>
+    <label style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#B9C3D6">What should we call you?</label>
+    <input value="{{ obName }}" onChange="{{ setObName }}" placeholder="Sam" style="margin-top:8px;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:14px 16px;font-size:18px;color:#fff">
+  </sc-if>
+  <sc-if value="{{ ob1 }}" hint-placeholder-val="{{ false }}">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FAA83D">Your areas</div>
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:44px;line-height:1;margin:10px 0 14px">Where does your week go?</h2>
+    <p style="font-size:15px;line-height:1.55;color:#D6E0F0;margin:0 0 20px">Tasks, rocks, and prayers get tagged by these. Tap to keep or drop, or add your own.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <sc-for list="{{ obAreas }}" as="a" hint-placeholder-count="6"><button onClick="{{ a.toggle }}" style="border-radius:999px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;border:1px solid {{ a.border }};background:{{ a.bg }};color:{{ a.fg }}">{{ a.label }}</button></sc-for>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px"><input value="{{ obAreaDraft }}" onChange="{{ setObAreaDraft }}" onKeyDown="{{ obAreaKey }}" placeholder="Add an area" style="flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:12px 14px;font-size:15px;color:#fff"><button onClick="{{ obAddArea }}" style="border-radius:6px;border:none;background:#E15628;color:#fff;font-weight:600;padding:0 18px;cursor:pointer">Add</button></div>
+  </sc-if>
+  <sc-if value="{{ ob2 }}" hint-placeholder-val="{{ false }}">
+    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#FAA83D">Weekly rhythms</div>
+    <h2 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:44px;line-height:1;margin:10px 0 14px">What keeps you whole?</h2>
+    <p style="font-size:15px;line-height:1.55;color:#D6E0F0;margin:0 0 20px">Check these off as the week goes. Gentle by default, counts if you want them.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <sc-for list="{{ obRhythms }}" as="a" hint-placeholder-count="5"><button onClick="{{ a.toggle }}" style="border-radius:999px;padding:10px 16px;font-size:14px;font-weight:500;cursor:pointer;border:1px solid {{ a.border }};background:{{ a.bg }};color:{{ a.fg }}">{{ a.label }}</button></sc-for>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px"><input value="{{ obRhyDraft }}" onChange="{{ setObRhyDraft }}" onKeyDown="{{ obRhyKey }}" placeholder="Add a rhythm" style="flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:12px 14px;font-size:15px;color:#fff"><button onClick="{{ obAddRhy }}" style="border-radius:6px;border:none;background:#E15628;color:#fff;font-weight:600;padding:0 18px;cursor:pointer">Add</button></div>
+  </sc-if>
+  <div style="flex:1"></div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <sc-if value="{{ obNotFirst }}" hint-placeholder-val="{{ false }}"><button onClick="{{ obBack }}" style="border-radius:6px;border:1px solid rgba(255,255,255,.3);background:none;color:#fff;font-weight:600;padding:14px 20px;cursor:pointer">Back</button></sc-if>
+    <button onClick="{{ obNext }}" style="flex:1;border-radius:6px;border:none;background:#E15628;color:#fff;font-weight:600;font-size:16px;padding:15px 20px;cursor:pointer">{{ obNextLabel }}</button>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;streakMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;gentle&quot;,&quot;counts&quot;],&quot;default&quot;:&quot;gentle&quot;,&quot;tsType&quot;:&quot;'gentle'|'counts'&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
+class Component extends DCLogic {
+  KEY = "samos2";
+  AREAS = ["Stadia","LOFT City","Plant Dallas","Ethnos Network","Family","Personal"];
+  AREA_COLORS = {"Stadia":"#3D7C82","LOFT City":"#E15628","Plant Dallas":"#1A2E52","Ethnos Network":"#5B9478","Family":"#C8923A","Personal":"#5F656E"};
+  RHY_DEFAULT = ["Sabbath kept","Exercise","Family dinner","Day off honored","In the Word, not prep"];
+  PRINCIPLES = [
+    ["Above everything: Jesus","Spend time daily in prayer, reading the Bible, and cultivating a deeper relationship with God."],
+    ["Without family: nothing","Invest time and energy into my marriage and children, modeling Christ's love and teaching them to love and follow Him."],
+    ["Shepherd faithfully","Use the gifts of shepherding, mercy, teaching, and serving to encourage and guide others in their walk with Jesus."],
+    ["Invest with eternity in mind","Identify and mentor potential leaders, equipping them to serve in their spheres of influence."],
+    ["Make Jesus famous","Look for opportunities to share your faith and invite others into a relationship with Jesus."],
+    ["Integrity always","Be a person of character in all areas of life, willing to admit mistakes and seek forgiveness."],
+    ["Take care of self","Physically, emotionally, and spiritually, so you can keep serving faithfully."]
+  ];
+  VERSES = [
+    ["Psalm 46:10","Stop fighting, and know that I am God."],
+    ["Micah 6:8","Act justly, love faithfulness, and walk humbly with your God."],
+    ["Matthew 11:28","Come to me, all of you who are weary and burdened, and I will give you rest."],
+    ["Colossians 3:23","Whatever you do, do it from the heart, as something done for the Lord."],
+    ["Psalm 90:12","Teach us to number our days carefully so that we may develop wisdom in our hearts."],
+    ["Lamentations 3:22-23","His mercies never end. They are new every morning."],
+    ["Philippians 1:6","He who started a good work in you will carry it on to completion."]
+  ];
+  state = this.load();
+
+  load() {
+    let d = {};
+    try { d = JSON.parse(localStorage.getItem(this.KEY) || "{}"); } catch (e) {}
+    return Object.assign({
+      name: "", areas: this.AREAS.slice(), rhythms: this.RHY_DEFAULT.slice(), onboarded: false,
+      tasks: [], rocks: [], prayers: [], people: [], library: [], journal: {}, reviews: {}, rhyMap: {}, rolItems: [], saved: [], read: [],
+      asanaToken: "", asanaUser: "", pastDueDays: 14, cals: [{ id: "outlook", name: "Outlook", url: "" }, { id: "google", name: "Google", url: "" }], reminders: [{ id: "morning", label: "Morning pause", h: 7, on: true }, { id: "midday", label: "Midday check-in", h: 13, on: true }, { id: "evening", label: "Evening reflection", h: 21, on: true }, { id: "weekly", label: "Weekly review", h: 8, on: true, day: 0 }], channels: { sms: true, push: true }, phone: "214-403-6259", serverUrl: "", vapid: "", installDismissed: false, aiKey: "", aiVoice: "pastoral", aiAuto: true, aiBriefs: {}, sermons: [], sb: { url: "", key: "", pass: "" }, touchSeen: {}, pco: { id: "", secret: "" }, quarters: {}
+    }, d, {
+      tab: "today", soulSeg: "reflection", workOpen: false, obStep: 0, obName: d.name || "", obAreaDraft: "", obRhyDraft: "",
+      taskDraft: "", taskArea: "", taskDue: "", rockDraft: "", rockArea: "", swipeId: null, swipeX: 0, swipeStartX: 0, swipeSnap: false,
+      toast: null, undo: null, onboarding: !d.onboarded, settingsOpen: false
+    });
+  }
+  save(patch, cb) {
+    this.setState(patch, () => {
+      const s = this.state;
+      const keep = { name: s.name, areas: s.areas, rhythms: s.rhythms, onboarded: s.onboarded, tasks: s.tasks, rocks: s.rocks, prayers: s.prayers, people: s.people, library: s.library, journal: s.journal, reviews: s.reviews, rhyMap: s.rhyMap, rolItems: s.rolItems, saved: s.saved, read: s.read, asanaToken: s.asanaToken, asanaUser: s.asanaUser, pastDueDays: s.pastDueDays, cals: s.cals, reminders: s.reminders, channels: s.channels, phone: s.phone, serverUrl: s.serverUrl, vapid: s.vapid, installDismissed: s.installDismissed, aiKey: s.aiKey, aiVoice: s.aiVoice, aiAuto: s.aiAuto, aiBriefs: s.aiBriefs, sermons: s.sermons, sb: s.sb, touchSeen: s.touchSeen, pco: s.pco, quarters: s.quarters };
+      try { localStorage.setItem(this.KEY, JSON.stringify(keep)); } catch (e) {}
+      this.pushSync(keep);
+      cb && cb();
+    });
+  }
+  toast(msg, undo) {
+    clearTimeout(this._tt);
+    this.setState({ toast: msg, undo: undo || null });
+    this._tt = setTimeout(() => this.setState({ toast: null, undo: null }), undo ? 5000 : 2000);
+  }
+  dayKey(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+  weekKey(d) { d = d || new Date(); const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y = t.getUTCFullYear(); return y + "-W" + String(Math.ceil(((t - Date.UTC(y, 0, 1)) / 864e5 + 1) / 7)).padStart(2, "0"); }
+  quarter() { const d = new Date(); return "Q" + (Math.floor(d.getMonth() / 3) + 1) + " " + d.getFullYear(); }
+  dueInfo(due) {
+    if (!due) return { t: "", c: "#8A8F96", diff: 99 };
+    const diff = Math.round((new Date(due + "T00:00:00") - new Date(this.dayKey() + "T00:00:00")) / 864e5);
+    const nice = new Date(due + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    if (diff < 0) return { t: "Overdue", c: "#A53A16", diff };
+    if (diff === 0) return { t: "Today", c: "#E15628", diff };
+    if (diff === 1) return { t: "Tomorrow", c: "#1A2E52", diff };
+    return { t: nice, c: "#8A8F96", diff };
+  }
+  pplStatus(p) {
+    if (!p.cad) return { t: "No rhythm", c: "#8A8F96", days: 9e9 };
+    const days = Math.round(((p.last || p.ts) + p.cad * 864e5 - Date.now()) / 864e5);
+    if (days < 0) return { t: "Quiet " + Math.abs(days) + "d", c: "#A53A16", days };
+    if (days <= 3) return { t: days === 0 ? "Due today" : "Due in " + days + "d", c: "#E15628", days };
+    return { t: days >= 14 ? "Next in " + Math.round(days / 7) + "w" : "Next in " + days + "d", c: "#5B9478", days };
+  }
+  streak(map) {
+    let n = 0; const d = new Date();
+    if (!map[this.dayKey(d)]) d.setDate(d.getDate() - 1);
+    while (map[this.dayKey(d)]) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  chip(label, on, toggle, dark) {
+    return dark
+      ? { label, toggle, border: on ? "#E15628" : "rgba(255,255,255,.25)", bg: on ? "#E15628" : "transparent", fg: "#fff" }
+      : { label, toggle, border: on ? "#D6E0F0" : "#E4E3DE", bg: on ? "#EDF2FA" : "#fff", fg: on ? "#1A2E52" : "#5F656E", dot: on ? "#1A2E52" : "#D9DBDC" };
+  }
+  go(tab, anchor) {
+    this.setState({ tab, workOpen: false, tasksOpen: false, sermonsOpen: false }, () => {
+      const el = this.scrollEl();
+      if (!el) return;
+      if (anchor) { const a = el.querySelector("#" + anchor); if (a) { el.scrollTo({ top: a.offsetTop - 70, behavior: "smooth" }); return; } }
+      el.scrollTo({ top: 0 });
+    });
+  }
+  scrollEl() { return this._scroll; }
+
+  renderVals() {
+    const s = this.state, gentle = (this.props.streakMode ?? "gentle") === "gentle";
+    const now = new Date(), h = now.getHours();
+    const name = s.name || "Sam";
+    const doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 864e5);
+    const usePrin = doy % 2 === 0, idx = Math.floor(doy / 2);
+    const daily = usePrin ? this.PRINCIPLES[idx % this.PRINCIPLES.length] : this.VERSES[idx % this.VERSES.length];
+    const areaColor = a => this.AREA_COLORS[a] || "#5F656E";
+    const today = this.dayKey();
+
+    // matters
+    const matters = [];
+    s.tasks.filter(t => !t.done && t.due && this.dueInfo(t.due).diff <= 0).slice(0, 3).forEach(t => matters.push({ title: t.text, sub: this.dueInfo(t.due).t + (t.area ? " · " + t.area : ""), tag: "Task", color: areaColor(t.area), go: () => this.go("today", "tasks") }));
+    s.people.filter(p => this.pplStatus(p).days <= 0).slice(0, 2).forEach(p => matters.push({ title: "Check in with " + p.name, sub: this.pplStatus(p).t + (p.role ? " · " + p.role : ""), tag: "Person", color: "#3D7C82", go: () => this.go("people") }));
+    const aT = (s.asanaTasks || []).filter(t => !t.completed && t.due && this.dueInfo(t.due).diff <= 0); if (aT.length && matters.length < 4) { const t = aT.sort((a, b) => this.dueInfo(a.due).diff - this.dueInfo(b.due).diff)[0]; matters.push({ title: t.name, sub: this.dueInfo(t.due).t + " · " + t.project + (aT.length > 1 ? " · +" + (aT.length - 1) + " more" : ""), tag: "Asana", color: "#E15628", go: () => this.setState({ tasksOpen: true }) }); }
+    const cur = this.currentSermon(); if (cur && matters.length < 4) { const left = this.STAGES.filter(st => !(cur.done || {})[st[0]]).length, dd = this.dueInfo(cur.date).diff; if (left && dd <= 3) matters.push({ title: cur.title || cur.text, sub: left + " stage" + (left > 1 ? "s" : "") + " left · preach " + this.dueInfo(cur.date).t, tag: "Sermon", color: "#C8923A", go: () => this.setState({ sermonsOpen: true }) }); }
+    const q = this.quarter(), qRocks = s.rocks.filter(r => r.q === q), qDone = qRocks.filter(r => r.done).length;
+    if (qRocks.length && matters.length < 4) { const r = qRocks.find(r => !r.done); if (r) matters.push({ title: r.text, sub: "A rock for " + q, tag: "Rock", color: "#C8923A", go: () => this.go("today", "rocks") }); }
+
+    // rhythms
+    const wk = this.weekKey(), wkState = s.rhyMap[wk] || {};
+    const rhyDone = s.rhythms.filter(r => wkState[r]).length;
+    const rhythmRows = s.rhythms.map(r => this.chip(r, !!wkState[r], () => { const m = Object.assign({}, s.rhyMap); m[wk] = Object.assign({}, wkState, { [r]: !wkState[r] }); this.save({ rhyMap: m }); }));
+
+    // tasks
+    const sorted = s.tasks.slice().sort((a, b) => (a.done - b.done) || (this.dueInfo(a.due).diff - this.dueInfo(b.due).diff) || (a.ts - b.ts));
+    const taskRows = sorted.map(t => {
+      const di = this.dueInfo(t.due), active = s.swipeId === t.id;
+      return { id: t.id, text: t.text, area: t.area, areaColor: areaColor(t.area), dueText: t.done ? "done" : di.t, dueColor: t.done ? "#8A8F96" : di.c,
+        fg: t.done ? "#8A8F96" : "#1A2E52", deco: t.done ? "line-through" : "none", checkMark: t.done ? "✓" : "", checkBg: t.done ? "#5B9478" : "#fff", checkBorder: t.done ? "#5B9478" : "#D9DBDC",
+        dx: active ? s.swipeX : 0, trans: active && !s.swipeSnap ? "none" : "transform .22s cubic-bezier(.2,0,0,1)", bgSwipe: active && s.swipeX < 0 ? "#9F2F2D" : "#346538",
+        toggle: () => this.toggleTask(t.id) };
+    });
+    const openTasks = s.tasks.filter(t => !t.done).concat((s.asanaTasks || []).filter(t => !t.completed)), dueToday = openTasks.filter(t => t.due && this.dueInfo(t.due).diff <= 0).length;
+
+    // people
+    const quiet = s.people.filter(p => this.pplStatus(p).days <= 3).length;
+
+    // reflection
+    const jrnStreak = this.streak(s.journal), wroteToday = !!s.journal[today];
+
+    const tabs = (arr) => arr.map(tb => ({ label: tb[0], glyph: tb[2], go: () => this.go(tb[1]), color: s.tab === tb[1] ? "#1A2E52" : "#8A8F96", dotOp: s.tab === tb[1] ? 1 : 0 }));
+    const obArea = (list, key) => list.map(a => this.chip(a.label, a.on, a.toggle, true));
+    const ob = s.obStep;
+
+    return {
+      // header
+      dateLong: now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }),
+      greeting: (h < 12 ? "Good morning, " : h < 17 ? "Good afternoon, " : "Good evening, ") + name,
+      initial: name[0].toUpperCase(), openSettings: () => this.setState({ settingsOpen: true, setSeg: s.setSeg || "asana", nameDraft: s.name }),
+      dailyKind: usePrin ? "Rule of life · principle " + ((idx % 7) + 1) : "Today's verse · " + daily[0] + " (CSB)",
+      dailyTitle: usePrin ? daily[0] : "“" + daily[1] + "”", dailyBody: usePrin ? daily[1] : "Carry this one into the day.",
+      isToday: s.tab === "today" && !s.workOpen && !s.tasksOpen && !s.sermonsOpen,
+      matters, hasMatters: matters.length > 0, noMatters: matters.length === 0, mattersCount: matters.length ? matters.length + " thing" + (matters.length > 1 ? "s" : "") : "",
+      // tiles
+      openTasks: openTasks.length, taskSub: dueToday ? dueToday + " due today" : openTasks.length ? "none due today" : "clear",
+      quietCount: quiet, peopleSub: s.people.length ? (quiet ? "going quiet" : "all caught up") : "no one added yet",
+      rockPct: qRocks.length ? Math.round(qDone / qRocks.length * 100) : 0, rockLabel: qRocks.length ? qDone + "/" + qRocks.length : "—", rockSub: qRocks.length ? "done this quarter" : "none set for " + q,
+      rhyPct: s.rhythms.length ? Math.round(rhyDone / s.rhythms.length * 100) : 0, rhyLabel: rhyDone + "/" + s.rhythms.length, rhySub: gentle ? (rhyDone ? "kept so far this week" : "a fresh week") : "this week · " + this.rhyWeeksStreak() + " weeks strong",
+      jrnStreakBig: gentle ? (wroteToday ? "✓" : "—") : jrnStreak, jrnSub: gentle ? (wroteToday ? "written today" : "not yet today") : "day streak" + (wroteToday ? "" : " · write today to keep it"),
+      rhyCountText: gentle ? "" : rhyDone + " of " + s.rhythms.length, rhythmRows,
+      goTasks: () => s.asanaToken ? this.setState({ tasksOpen: true }) : this.go("today", "tasks"), goPeople: () => this.go("people"), goRocks: () => this.go("today", "rocks"), goRhythms: () => this.go("today", "rhythms"), goSoul: () => this.setState({ tab: "soul", soulSeg: "reflection" }), goWork: () => this.setState({ tab: "today", workOpen: true }),
+      // tasks
+      areaOptions: [{ value: "", label: "Area" }].concat(s.areas.map(a => ({ value: a, label: a }))), taskDraft: s.taskDraft, taskArea: s.taskArea, taskDue: s.taskDue,
+      setTaskDraft: e => this.setState({ taskDraft: e.target.value }), setTaskArea: e => this.setState({ taskArea: e.target.value }), setTaskDue: e => this.setState({ taskDue: e.target.value }),
+      taskKey: e => { if (e.key === "Enter") this.addTask(); }, dueLabel: s.taskDue ? new Date(s.taskDue + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "Due", dueFg: s.taskDue ? "#1A2E52" : "#787774", addTask: () => this.addTask(), taskRows,
+      swipeStart: e => { e.currentTarget.setPointerCapture(e.pointerId); this.setState({ swipeId: Number(e.currentTarget.dataset.id), swipeStartX: e.clientX, swipeX: 0, swipeSnap: false }); },
+      swipeMove: e => { if (s.swipeId == null) return; const dx = e.clientX - s.swipeStartX; if (Math.abs(dx) > 4) this.setState({ swipeX: Math.max(-140, Math.min(140, dx)) }); },
+      swipeEnd: e => { if (s.swipeId == null) return; const id = s.swipeId, dx = s.swipeX; if (dx > 80) this.toggleTask(id); else if (dx < -80) this.removeTask(id); this.setState({ swipeId: null, swipeX: 0, swipeSnap: true }); },
+      // rocks
+      quarter: q, rockDraft: s.rockDraft, rockArea: s.rockArea, setRockDraft: e => this.setState({ rockDraft: e.target.value }), setRockArea: e => this.setState({ rockArea: e.target.value }), rockKey: e => { if (e.key === "Enter") this.addRock(); }, addRock: () => this.addRock(),
+      rockRows: qRocks.slice().sort((a, b) => a.done - b.done).map(r => ({ text: r.text, area: r.area, areaColor: areaColor(r.area), fg: r.done ? "#8A8F96" : "#1A2E52", deco: r.done ? "line-through" : "none", checkMark: r.done ? "✓" : "", checkBg: r.done ? "#C8923A" : "#fff", checkBorder: r.done ? "#C8923A" : "#D9DBDC",
+        toggle: () => this.save({ rocks: s.rocks.map(x => x.id === r.id ? Object.assign({}, x, { done: !x.done }) : x) }), remove: () => { this.save({ rocks: s.rocks.filter(x => x.id !== r.id) }); this.toast("Rock removed", () => this.save({ rocks: s.rocks })); } })),
+      // tabs
+      tabsLeft: tabs([["Today", "today", "●"], ["Briefing", "brief", "▤"]]), tabsRight: tabs([["People", "people", "◐"], ["Soul", "soul", "◯"]]),
+      goCapture: () => this.go("capture"), captureBg: s.tab === "capture" ? "#E15628" : "#1A2E52", captureTf: s.tab === "capture" ? "rotate(45deg)" : "none",
+      onScroll: e => { this._scroll = e.currentTarget; },
+      // toast
+      toastOn: !!s.toast, toastMsg: s.toast, toastUndo: !!s.undo, doUndo: () => { const u = s.undo; this.setState({ toast: null, undo: null }); u && u(); },
+      // onboarding
+      onboarding: s.onboarding, obDots: [0, 1, 2].map(i => ({ bg: i <= ob ? "#E15628" : "rgba(255,255,255,.2)", w: i === ob ? "28px" : "12px" })),
+      ob0: ob === 0, ob1: ob === 1, ob2: ob === 2, obNotFirst: ob > 0, obNextLabel: ob === 2 ? "Start my day" : "Next",
+      obName: s.obName, setObName: e => this.setState({ obName: e.target.value }),
+      obAreas: this.AREAS.concat(s.areas.filter(a => this.AREAS.indexOf(a) < 0)).map(a => this.chip(a, s.areas.indexOf(a) >= 0, () => this.save({ areas: s.areas.indexOf(a) >= 0 ? s.areas.filter(x => x !== a) : s.areas.concat([a]) }), true)),
+      obAreaDraft: s.obAreaDraft, setObAreaDraft: e => this.setState({ obAreaDraft: e.target.value }), obAddArea: () => this.obAdd("areas", "obAreaDraft"), obAreaKey: e => { if (e.key === "Enter") this.obAdd("areas", "obAreaDraft"); },
+      obRhythms: this.RHY_DEFAULT.concat(s.rhythms.filter(a => this.RHY_DEFAULT.indexOf(a) < 0)).map(a => this.chip(a, s.rhythms.indexOf(a) >= 0, () => this.save({ rhythms: s.rhythms.indexOf(a) >= 0 ? s.rhythms.filter(x => x !== a) : s.rhythms.concat([a]) }), true)),
+      obRhyDraft: s.obRhyDraft, setObRhyDraft: e => this.setState({ obRhyDraft: e.target.value }), obAddRhy: () => this.obAdd("rhythms", "obRhyDraft"), obRhyKey: e => { if (e.key === "Enter") this.obAdd("rhythms", "obRhyDraft"); },
+      obBack: () => this.setState({ obStep: ob - 1 }),
+      obNext: () => { if (ob < 2) this.setState({ obStep: ob + 1, name: s.obName.trim() || s.name }); else this.save({ onboarded: true, onboarding: false, name: s.obName.trim() || s.name || "Sam" }, () => this.toast("Welcome home, " + (this.state.name) + ".")); },
+      ...this.moreVals()
+    };
+  }
+  CAP_TAGS = ["Idea","Quote","Sermon","Prayer","Person","Personal"];
+  CAP_COLORS = {"Idea":"#E15628","Quote":"#C8923A","Sermon":"#1A2E52","Prayer":"#5B9478","Person":"#3D7C82","Personal":"#8A8F96"};
+  ROLE_COLORS = {"Member":"#1A2E52","Planter":"#E15628","Leader":"#3D7C82","Neighbor":"#5B9478","Friend":"#C8923A","Family":"#FAA83D"};
+  moreVals() {
+    const s = this.state;
+    const capTag = s.capTag || "Idea", libFilter = s.libFilter || "All", q = (s.libQuery || "").toLowerCase();
+    const when = ts => new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    const libRows = s.library.filter(it => (libFilter === "All" || it.tag === libFilter) && (!q || it.text.toLowerCase().includes(q))).map(it => ({
+      text: it.text, tag: it.tag, color: this.CAP_COLORS[it.tag] || "#8A8F96", when: when(it.ts), hasAudio: !!it.audio, audio: it.audio || "",
+      toTask: () => { this.save({ tasks: s.tasks.concat([{ id: Date.now(), text: it.text, area: "", due: "", done: false, ts: Date.now() }]) }); this.toast("Added to tasks"); },
+      remove: () => { const prev = s.library; this.save({ library: prev.filter(x => x.id !== it.id) }); this.toast("Removed", () => this.save({ library: prev })); }
+    }));
+    const pplFilter = s.pplFilter || "All";
+    const pplRows = s.people.slice().sort((a, b) => this.pplStatus(a).days - this.pplStatus(b).days).filter(p => pplFilter === "All" || (pplFilter === "Needs attention" ? this.pplStatus(p).days <= 3 : p.role === pplFilter)).map(p => {
+      const st = this.pplStatus(p);
+      return { name: p.name, role: p.role || "", note: p.note, hasNote: !!p.note, color: this.ROLE_COLORS[p.role] || "#5F656E", initials: p.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase(),
+        status: st.t, stColor: st.c, last: p.last ? "last " + when(p.last) : "no touch yet",
+        touch: () => { this.save({ people: s.people.map(x => x.id === p.id ? Object.assign({}, x, { last: Date.now() }) : x) }); this.toast("Touch logged for " + p.name); },
+        remove: () => { const prev = s.people; this.save({ people: prev.filter(x => x.id !== p.id) }); this.toast(p.name + " removed", () => this.save({ people: prev })); } };
+    });
+    const need = s.people.filter(p => this.pplStatus(p).days <= 3).length;
+    const roles = ["All", "Needs attention" + (need ? " · " + need : "")].concat(Object.keys(this.ROLE_COLORS).filter(r => s.people.some(p => p.role === r)));
+    return {
+      isCapture: s.tab === "capture", capDraft: s.capDraft || "", setCapDraft: e => this.setState({ capDraft: e.target.value }), capKey: e => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") this.saveCapture(); },
+      capTags: this.CAP_TAGS.map(t => this.chip(t, t === capTag, () => this.setState({ capTag: t }))), capHint: s.library.length ? s.library.length + " saved · ⌘↵ to save" : "Lands in your library below",
+      saveCapture: () => this.saveCapture(), ...this.voiceVals(),
+      libQuery: s.libQuery || "", setLibQuery: e => this.setState({ libQuery: e.target.value }), libCount: libRows.length ? libRows.length + " item" + (libRows.length > 1 ? "s" : "") : "",
+      libChips: ["All"].concat(this.CAP_TAGS).map(t => this.chip(t, t === libFilter, () => this.setState({ libFilter: t }))), libRows, libEmpty: !libRows.length,
+      libEmptyMsg: s.library.length ? "No matches in this view." : "Your library is empty. Capture the first thought above; it will wait for you here.",
+      isPeople: s.tab === "people", pplName: s.pplName || "", setPplName: e => this.setState({ pplName: e.target.value }), pplNote: s.pplNote || "", setPplNote: e => this.setState({ pplNote: e.target.value }),
+      pplRole: s.pplRole || "", setPplRole: e => this.setState({ pplRole: e.target.value }), pplCad: s.pplCad || "", setPplCad: e => this.setState({ pplCad: e.target.value }),
+      addPerson: () => { const name = (s.pplName || "").trim(); if (!name) return; this.save({ people: s.people.concat([{ id: Date.now(), name, note: (s.pplNote || "").trim(), role: s.pplRole || "", cad: Number(s.pplCad || 0), ts: Date.now(), last: Date.now() }]), pplName: "", pplNote: "", pplRole: "", pplCad: "" }); },
+      pplChips: roles.map(r => { const key = r.startsWith("Needs") ? "Needs attention" : r; return this.chip(r, key === pplFilter, () => this.setState({ pplFilter: key })); }), pplRows, pplEmpty: !pplRows.length,
+      pplEmptyMsg: s.people.length ? "No one in this view." : "Add the people you shepherd and coach. Set a check-in rhythm and this page will tell you who is going quiet.",
+      ...this.soulVals()
+    };
+  }
+  saveCapture() { const s = this.state, text = (s.capDraft || "").trim(); if (!text && !s.voiceAudio) return; this.save({ library: [{ id: Date.now(), text: text || "(voice note)", tag: s.capTag || "Idea", ts: Date.now(), audio: s.voiceAudio || null }].concat(s.library), capDraft: "", voiceAudio: null, voiceClipLen: "" }); this.toast("Saved to your library"); }
+  voiceVals() {
+    const s = this.state, on = !!s.voiceOn;
+    return {
+      voiceOn: on, voiceStatus: s.voiceStatus || "Listening…", voiceClip: !!s.voiceAudio && !on, voiceClipLen: s.voiceClipLen || "",
+      voiceBorder: on ? "#E15628" : "#E4E3DE", voiceBg: on ? "#E15628" : "#fff", voiceFg: on ? "#fff" : "#1A2E52", voiceShape: on ? "2px" : "50%",
+      voiceToggle: () => on ? this.stopVoice() : this.startVoice()
+    };
+  }
+  async startVoice() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { this.toast("This browser can't record audio."); return; }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const rec = new MediaRecorder(stream), chunks = []; this._rec = rec; this._recStart = Date.now();
+      rec.ondataavailable = e => chunks.push(e.data);
+      rec.onstop = () => { stream.getTracks().forEach(t => t.stop()); const blob = new Blob(chunks, { type: rec.mimeType || "audio/webm" }); if (blob.size > 2.5e6) { this.toast("Clip too long to keep; text was saved."); return; } const fr = new FileReader(); fr.onload = () => this.setState({ voiceAudio: fr.result, voiceClipLen: Math.round((Date.now() - this._recStart) / 1000) + "s" }); fr.readAsDataURL(blob); };
+      rec.start();
+      if (SR) { const r = new SR(); this._sr = r; r.continuous = true; r.interimResults = true; r.lang = "en-US"; const base = this.state.capDraft || "";
+        r.onresult = ev => { let fin = "", tmp = ""; for (let i = 0; i < ev.results.length; i++) (ev.results[i].isFinal ? fin += ev.results[i][0].transcript : tmp += ev.results[i][0].transcript); this.setState({ capDraft: (base + " " + fin + tmp).trim(), voiceStatus: "Listening… tap the square to stop" }); };
+        r.onerror = () => this.setState({ voiceStatus: "Recording (transcription unavailable)" }); r.start(); }
+      this.setState({ voiceOn: true, voiceStatus: SR ? "Listening… tap the square to stop" : "Recording (transcription unavailable here)", voiceAudio: null });
+    } catch (e) { this.toast("Microphone permission is needed for voice capture."); }
+  }
+  stopVoice() { try { this._sr && this._sr.stop(); } catch (e) {} try { this._rec && this._rec.state !== "inactive" && this._rec.stop(); } catch (e) {} this.setState({ voiceOn: false }); }
+  JRN = [["joy","Where I found joy","A moment, a person, a gift","#E15628"],["brokenness","Where I saw brokenness","What grieved you or needs redemption","#9F2F2D"],["thanks","What I am thanking God for","Name it plainly","#346538"],["prayer","What I am praying for","Who and what you are lifting up","#1A2E52"],["learning","What I am learning","An insight, a question, a next step","#956400"]];
+  REV = [["moved","What actually moved this week","Wins, progress, answered prayers, moments of grace","#346538"],["dropped","What got dropped or needs releasing","Name it without shame. Some things should be let go on purpose","#9F2F2D"],["top3","Top three for next week","Only three. What matters most across every area","#1A2E52"],["rest","Rest check","Is sabbath on the calendar? Time with family? What will restore you","#E15628"]];
+  PRACTICES = [["prayer","Prayer","In a culture of distraction and hurried living, we seek intimacy with God through prayer."],["fasting","Fasting","In a culture of indulgence, we grow in holiness by fasting, focusing our hearts on God."],["service","Service","In a culture of self-interest, we live out our faith through acts of service."],["worship","Worship","In a culture that worships idols, we center our hearts on God through worship."],["sabbath","Sabbath","In a culture of constant busyness, we find rest and renewal in God through Sabbath."],["fellowship","Fellowship","In a culture of isolation, we pursue deep, life-giving relationships."],["silence","Silence and solitude","In a culture of noise, we seek to hear God's voice in silence and solitude."],["meditation","Meditation","In a culture of relativism, we seek truth and guidance by meditating on Scripture."],["generosity","Generosity","In a culture of consumerism, we live out contentment and trust in God through generosity."]];
+  soulVals() {
+    const s = this.state, seg = s.soulSeg, today = this.dayKey(), wk = this.weekKey();
+    const when = ts => new Date(ts).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    const titles = { reflection: ["Daily reflection", today === today ? new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }) : ""], prayer: ["Prayer requests", "Carrying one another"], review: ["Weekly review", "Week of " + new Date().toLocaleDateString(undefined, { month: "long", day: "numeric" })], rule: ["Rule of life", "Becoming, not just achieving"], quarter: ["Quarterly review", this.reviewQuarter().name] };
+    const jd = s.jrnDraft || s.journal[today] || {}, rd = s.revDraft || s.reviews[wk] || {};
+    const entries = (map, fields, openKey, labelFn) => Object.keys(map).sort().reverse().map(k => {
+      const e = map[k], parts = fields.filter(f => e[f[0]]).map(f => ({ label: f[1], text: e[f[0]] })), open = s[openKey] === k;
+      return { date: labelFn(k), count: parts.length + (parts.length === 1 ? " note" : " notes"), parts, open, chev: open ? "–" : "+", toggle: () => this.setState({ [openKey]: open ? null : k }) };
+    });
+    const prayFilter = s.prayFilter || "Open";
+    const prayRows = s.prayers.slice().sort((a, b) => (!!a.answered - !!b.answered) || (b.ts - a.ts)).filter(p => prayFilter === "Answered" ? p.answered : !p.answered).map(p => ({
+      name: p.name || "Unnamed", when: when(p.ts), area: p.area, color: this.AREA_COLORS[p.area] || "#9B9A97", text: p.text, fg: p.answered ? "#787774" : "#2B3142",
+      ansLabel: p.answered ? "Answered " + when(p.answeredTs || p.ts) : "Mark answered", ansBorder: p.answered ? "#EDF3EC" : "#E4E3DE", ansBg: p.answered ? "#EDF3EC" : "#fff", ansFg: p.answered ? "#346538" : "#1A2E52",
+      toggle: () => { this.save({ prayers: s.prayers.map(x => x.id === p.id ? Object.assign({}, x, { answered: !x.answered, answeredTs: Date.now() }) : x) }); if (!p.answered) this.toast("Answered. Thank God."); },
+      remove: () => { const prev = s.prayers; this.save({ prayers: prev.filter(x => x.id !== p.id) }); this.toast("Request removed", () => this.save({ prayers: prev })); }
+    }));
+    const openN = s.prayers.filter(p => !p.answered).length, ansN = s.prayers.length - openN;
+    const overdue = s.tasks.filter(t => !t.done && t.due && this.dueInfo(t.due).diff < 0).length, quiet = s.people.filter(p => this.pplStatus(p).days < 0).length, q = this.quarter();
+    const prinFromSeed = this.PRINCIPLES.map((p, i) => ({ n: i + 1, title: p[0], desc: p[1] }));
+    const cads = s.rolCads || {}, drafts = s.rolDrafts || {};
+    return {
+      isSoul: s.tab === "soul", soulTitle: titles[seg][0], soulEyebrow: titles[seg][1],
+      soulSegs: [["reflection", "Reflection"], ["prayer", "Prayer"], ["review", "Review"], ["quarter", "Quarter"], ["rule", "Rule of life"]].map(x => ({ label: x[1], go: () => this.setState({ soulSeg: x[0] }), fg: seg === x[0] ? "#1A2E52" : "#9B9A97", line: seg === x[0] ? "#E15628" : "transparent" })),
+      segReflect: seg === "reflection", segPray: seg === "prayer", segReview: seg === "review", segQuarter: seg === "quarter", segRule: seg === "rule",
+      ...this.quarterVals(),
+      jrnFields: this.JRN.map(f => ({ label: f[1], ph: f[2], color: f[3], value: jd[f[0]] || "", set: e => this.setState({ jrnDraft: Object.assign({}, jd, { [f[0]]: e.target.value }) }) })),
+      jrnSaveLabel: s.journal[today] ? "Update today's reflection" : "Save today's reflection",
+      saveJournal: () => { const d = s.jrnDraft || {}; if (!this.JRN.some(f => (d[f[0]] || "").trim())) return; this.save({ journal: Object.assign({}, s.journal, { [today]: Object.assign({ ts: Date.now() }, d) }), jrnDraft: null }); this.toast("Saved. Well done."); },
+      jrnPast: entries(s.journal, this.JRN, "jrnOpen", k => new Date(k + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })), jrnPastCount: Object.keys(s.journal).length ? Object.keys(s.journal).length + " days" : "", jrnNone: !Object.keys(s.journal).length,
+      prayName: s.prayName || "", setPrayName: e => this.setState({ prayName: e.target.value }), prayText: s.prayText || "", setPrayText: e => this.setState({ prayText: e.target.value }), prayArea: s.prayArea || "", setPrayArea: e => this.setState({ prayArea: e.target.value }),
+      addPrayer: () => { const text = (s.prayText || "").trim(); if (!text) return; this.save({ prayers: s.prayers.concat([{ id: Date.now(), name: (s.prayName || "").trim(), text, area: s.prayArea || "", ts: Date.now(), answered: false }]), prayName: "", prayText: "", prayArea: "", prayFilter: "Open" }); },
+      prayChips: [["Open", "Open" + (openN ? " · " + openN : "")], ["Answered", "Answered" + (ansN ? " · " + ansN : "")]].map(x => this.chip(x[1], prayFilter === x[0], () => this.setState({ prayFilter: x[0] }))),
+      prayRows, prayNone: !prayRows.length, prayNoneMsg: prayFilter === "Answered" ? "Answered prayers will gather here." : "When someone shares a request, log it here. Then pray through the list.",
+      revSnap: [{ n: s.tasks.filter(t => !t.done).length, label: "open tasks", color: "#1A2E52" }, { n: overdue, label: "overdue", color: overdue ? "#9F2F2D" : "#1A2E52" }, { n: quiet, label: "people going quiet", color: quiet ? "#9F2F2D" : "#1A2E52" }],
+      revFields: this.REV.map(f => ({ label: f[1], ph: f[2], color: f[3], value: rd[f[0]] || "", set: e => this.setState({ revDraft: Object.assign({}, rd, { [f[0]]: e.target.value }) }) })),
+      revSaveLabel: s.reviews[wk] ? "Update this week's review" : "Save this week's review",
+      saveReview: () => { const d = s.revDraft || {}; if (!this.REV.some(f => (d[f[0]] || "").trim())) return; this.save({ reviews: Object.assign({}, s.reviews, { [wk]: Object.assign({ ts: Date.now() }, d) }), revDraft: null }); this.toast("Review saved"); },
+      revPast: entries(s.reviews, this.REV, "revOpen", k => "Week " + k.split("-W")[1] + ", " + k.split("-W")[0]), revPastCount: Object.keys(s.reviews).length ? Object.keys(s.reviews).length + " weeks" : "", revNone: !Object.keys(s.reviews).length,
+      principles: prinFromSeed,
+      practices: this.PRACTICES.map(pr => ({ name: pr[1], fr: pr[2], draft: drafts[pr[0]] || "", cad: cads[pr[0]] || "Weekly",
+        setDraft: e => this.setState({ rolDrafts: Object.assign({}, drafts, { [pr[0]]: e.target.value }) }), setCad: e => this.setState({ rolCads: Object.assign({}, cads, { [pr[0]]: e.target.value }) }),
+        add: () => this.addRol(pr[0]), key: e => { if (e.key === "Enter") this.addRol(pr[0]); },
+        items: s.rolItems.filter(i => i.p === pr[0]).map(i => ({ cad: i.cad, text: i.text, weekly: i.cad === "Weekly", tLabel: i.track ? "Tracking" : "Track", tBorder: i.track ? "#D6E0F0" : "#E4E3DE", tBg: i.track ? "#EDF2FA" : "#fff", tFg: i.track ? "#1A2E52" : "#787774",
+          track: () => { const on = !i.track; this.save({ rolItems: s.rolItems.map(x => x.id === i.id ? Object.assign({}, x, { track: on }) : x), rhythms: on ? (s.rhythms.indexOf(i.text) < 0 ? s.rhythms.concat([i.text]) : s.rhythms) : s.rhythms.filter(r => r !== i.text) }); },
+          remove: () => { const prev = s.rolItems; this.save({ rolItems: prev.filter(x => x.id !== i.id), rhythms: s.rhythms.filter(r => r !== i.text) }); this.toast("Practice removed", () => this.save({ rolItems: prev })); } })) })),
+      ...this.briefVals()
+    };
+  }
+  addRol(p) { const s = this.state, d = s.rolDrafts || {}, text = (d[p] || "").trim(); if (!text) return; this.save({ rolItems: s.rolItems.concat([{ id: Date.now(), p, text, cad: (s.rolCads || {})[p] || "Weekly", track: false }]), rolDrafts: Object.assign({}, d, { [p]: "" }) }); }
+  componentDidMount() {
+    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js").catch(() => {});
+    window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); this._bip = e; this.forceUpdate(); });
+    window.addEventListener("appinstalled", () => { this._bip = null; this.toast("Sam OS is on your home screen."); });
+    const qp = new URLSearchParams(location.search); const shared = [qp.get("title"), qp.get("text"), qp.get("url")].filter(Boolean).join("\n");
+    if (shared) { this.setState({ tab: "capture", capDraft: shared, capTag: qp.get("url") ? "Idea" : (this.state.capTag || "Idea") }); history.replaceState(null, "", location.pathname); }
+    if (this.state.sb && this.state.sb.url) this.pullSync();
+    this._tick = setInterval(() => this.forceUpdate(), 60000);
+    if (this.state.pco && this.state.pco.id) this.loadPco();
+    import("./samos-data.js").then(m => { this.data = m; this.forceUpdate(); }); import("./samos-connect.js").then(m => { this.conn = m; if (this.state.asanaToken) this.loadAsana(); if (this.state.cals.some(c => c.url)) this.loadCal(); this.armLocalReminders(); }); }
+  async loadBrief(force) {
+    const m = this.data; if (!m) return;
+    const lens = this.state.lens || "Top picks";
+    const srcs = m.SOURCES.filter(s => lens === "Top picks" ? s.top : s.cat === lens);
+    this.setState({ briefLoading: true });
+    const cache = this.feedCache = this.feedCache || {};
+    const out = [];
+    await Promise.all(srcs.map(async s => {
+      try {
+        if (force || !cache[s.id] || Date.now() - cache[s.id].ts > 40 * 60e3) cache[s.id] = { ts: Date.now(), items: await m.loadFeed(s.url) };
+        cache[s.id].items.forEach(it => out.push(Object.assign({}, it, { src: s.name })));
+      } catch (e) {}
+    }));
+    const seen = {}, items = out.filter(it => !seen[it.link] && (seen[it.link] = 1)).sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    this.setState({ briefLoading: false, briefItems: items, briefLens: lens, briefAt: Date.now() });
+  }
+  briefVals() {
+    const s = this.state, m = this.data, lens = s.lens || "Top picks";
+    if (s.tab === "brief" && m && !s.briefLoading && (s.briefLens !== lens && lens !== "Saved")) setTimeout(() => this.loadBrief(false), 0);
+    const ago = d => { const t = new Date(d).getTime(); if (!t) return ""; const sec = (Date.now() - t) / 1e3; return sec < 3600 ? Math.max(1, Math.floor(sec / 60)) + "m" : sec < 864e5 / 1e3 ? Math.floor(sec / 3600) + "h" : Math.floor(sec / 86400) + "d"; };
+    const savedUrls = new Set(s.saved.map(x => x.link)), readSet = new Set(s.read);
+    const list = lens === "Saved" ? s.saved : (s.briefItems || []).filter(it => !readSet.has(it.link)).slice(0, 30);
+    const briefRows = list.map(it => { const sv = savedUrls.has(it.link); return {
+      src: it.src, ago: ago(it.date), title: it.title, link: it.link, desc: it.desc, hasDesc: !!it.desc, canRead: lens !== "Saved",
+      sLabel: sv ? "Saved" : "Save", sBorder: sv ? "#FBF3DB" : "#E4E3DE", sBg: sv ? "#FBF3DB" : "#fff", sFg: sv ? "#956400" : "#787774",
+      save: () => this.save({ saved: sv ? s.saved.filter(x => x.link !== it.link) : [Object.assign({}, it, { savedTs: Date.now() })].concat(s.saved) }),
+      read: () => { this.save({ read: s.read.concat([it.link]).slice(-800) }); this.toast("Marked read", () => this.save({ read: s.read })); },
+      toLib: () => { this.save({ library: [{ id: Date.now(), text: it.title + "\n" + it.link, tag: "Idea", ts: Date.now() }].concat(s.library) }); this.toast("Saved to your library"); } }; });
+    const lenses = ["Saved" + (s.saved.length ? " · " + s.saved.length : "")].concat(m ? m.LENSES : ["Top picks"]);
+    const wfFilter = s.wfFilter || "All", wfs = m ? m.WORKFLOWS : [];
+    const cats = ["All"].concat(wfs.map(w => w.cat).filter((c, i, a) => a.indexOf(c) === i));
+    return {
+      isBrief: s.tab === "brief", briefChips: lenses.map(l => { const key = l.startsWith("Saved") ? "Saved" : l; return this.chip(l, key === lens, () => this.setState({ lens: key })); }),
+      briefStatus: lens === "Saved" ? (s.saved.length ? s.saved.length + " saved" : "") : s.briefLoading ? "Loading..." : s.briefAt ? "Updated " + new Date(s.briefAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "",
+      briefRefresh: () => this.loadBrief(true), briefRows, briefEmpty: !briefRows.length, briefPulse: s.briefLoading ? "dotpulse 1.2s ease-in-out infinite" : "none",
+      briefEmptyMsg: lens === "Saved" ? "Tap Save on any article to keep it here." : s.briefLoading ? "Gathering the latest across your sources." : s.briefAt ? "Nothing new here, or the feeds couldn't be reached. Tap Refresh." : "Your briefing loads when you open this tab.",
+      ...this.connectVals(),
+      isWork: s.tab === "today" && s.workOpen && !s.tasksOpen && !s.sermonsOpen, closeWork: () => this.setState({ workOpen: false }),
+      wfChips: cats.map(c => this.chip(c, c === wfFilter, () => this.setState({ wfFilter: c }))),
+      wfRows: wfs.filter(w => wfFilter === "All" || w.cat === wfFilter).map(w => { const open = s.wfOpen === w.title, copied = s.wfCopied === w.title; return {
+        title: w.title, desc: w.desc, template: w.template, open, chev: open ? "–" : "+", toggle: () => this.setState({ wfOpen: open ? null : w.title }),
+        copyLabel: copied ? "Copied" : "Copy prompt", copyBg: copied ? "#346538" : "#1A2E52",
+        copy: async () => { try { await navigator.clipboard.writeText(w.template); } catch (e) {} this.setState({ wfCopied: w.title }); setTimeout(() => this.setState({ wfCopied: null }), 1600); } }; })
+    };
+  }
+  rhyWeeksStreak() { let n = 0; const d = new Date(); d.setDate(d.getDate() - 7); while (true) { const m = this.state.rhyMap[this.weekKey(d)]; if (!m || !Object.values(m).some(Boolean)) break; n++; d.setDate(d.getDate() - 7); } return n; }
+  obAdd(listKey, draftKey) { const v = (this.state[draftKey] || "").trim(); if (!v) return; const list = this.state[listKey]; if (list.indexOf(v) < 0) this.save({ [listKey]: list.concat([v]), [draftKey]: "" }); else this.setState({ [draftKey]: "" }); }
+  addTask() { const s = this.state, text = s.taskDraft.trim(); if (!text) return; this.save({ tasks: s.tasks.concat([{ id: Date.now(), text, area: s.taskArea, due: s.taskDue, done: false, ts: Date.now() }]), taskDraft: "", taskDue: "" }); }
+  toggleTask(id) { const s = this.state, t = s.tasks.find(x => x.id === id); this.save({ tasks: s.tasks.map(x => x.id === id ? Object.assign({}, x, { done: !x.done }) : x) }); if (t && !t.done) this.toast("Nice. One less thing."); }
+  removeTask(id) { const s = this.state, prev = s.tasks; this.save({ tasks: prev.filter(x => x.id !== id) }); this.toast("Task dropped", () => this.save({ tasks: prev })); }
+  addRock() { const s = this.state, text = s.rockDraft.trim(); if (!text) return; const q = this.quarter(); if (s.rockArea && s.rocks.filter(r => r.q === q && r.area === s.rockArea && !r.done).length >= 3) { this.toast("Three rocks max for " + s.rockArea + " this quarter"); return; } this.save({ rocks: s.rocks.concat([{ id: Date.now(), text, area: s.rockArea, q, done: false }]), rockDraft: "" }); }
+
+  async loadAsana(force) {
+    const s = this.state; if (!this.conn || !s.asanaToken) return;
+    this.setState({ asanaLoading: true, asanaErr: "" });
+    try { const tasks = await this.conn.asanaMyTasks(s.asanaToken); this.setState({ asanaTasks: tasks, asanaLoading: false, asanaAt: Date.now() }); }
+    catch (e) { this.setState({ asanaLoading: false, asanaErr: /401/.test(e.message) ? "Asana rejected the token. Create a new one and paste it again." : "Could not reach Asana. Check your connection and try again." }); }
+  }
+  async connectAsana() {
+    const tok = (this.state.asanaTokenDraft || "").trim(); if (!tok || !this.conn) return;
+    this.setState({ asanaBusy: true, asanaMsg: "Checking…" });
+    try { const me = await this.conn.asanaMe(tok); this.save({ asanaToken: tok, asanaUser: me.name, asanaBusy: false, asanaMsg: "Connected as " + me.name + ". " + me.workspaces.length + " workspace" + (me.workspaces.length > 1 ? "s" : "") + "." }, () => this.loadAsana()); }
+    catch (e) { this.setState({ asanaBusy: false, asanaMsg: "That token didn't work. Copy it again from Asana." }); }
+  }
+  async completeAsana(t) {
+    const s = this.state, prev = s.asanaTasks;
+    this.setState({ asanaTasks: prev.map(x => x.gid === t.gid ? Object.assign({}, x, { completed: true }) : x) });
+    try { await this.conn.asanaComplete(s.asanaToken, t.gid, true); this.toast("Done in Asana", async () => { this.setState({ asanaTasks: prev }); try { await this.conn.asanaComplete(s.asanaToken, t.gid, false); } catch (e) {} }); }
+    catch (e) { this.setState({ asanaTasks: prev }); this.toast("Asana didn't accept that. Try again."); }
+  }
+  async loadCal() {
+    const s = this.state; if (!this.conn || !s.cals.some(c => c.url)) return;
+    this.setState({ calLoading: true });
+    const from = new Date(); from.setHours(0, 0, 0, 0); const to = new Date(from); to.setDate(to.getDate() + 8);
+    const r = await this.conn.loadCalendars(s.cals, from, to);
+    this.setState({ calLoading: false, calEvents: r.events, calErrors: r.errors, calAt: Date.now() });
+  }
+  armLocalReminders() {
+    const s = this.state; if (!this.conn || !("Notification" in window)) return;
+    this.conn.scheduleLocal(s.reminders, t => this.reminderText(t.id));
+  }
+  reminderText(id) {
+    const s = this.state, v = this.renderVals(), due = (s.asanaTasks || []).filter(t => !t.completed && t.due && this.dueInfo(t.due).diff <= 0).length + s.tasks.filter(t => !t.done && t.due && this.dueInfo(t.due).diff <= 0).length;
+    const next = (s.calEvents || []).find(e => !e.allDay && e.start > new Date());
+    if (id === "morning") return [v.dailyTitle, due + " task" + (due === 1 ? "" : "s") + " due today.", next ? "Next: " + next.title + " at " + next.start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : ""].filter(Boolean).join(" ");
+    if (id === "midday") return "Breathe, then look at what matters this afternoon.";
+    if (id === "evening") return "A few honest lines before God, then rest.";
+    return "Fifteen minutes: what moved, what to release, top three for next week.";
+  }
+  async registerServer() {
+    const s = this.state, url = (s.serverUrl || "").replace(/\/$/, ""); if (!url) { this.setState({ remMsg: "Add the reminder server URL first (see server/README.md)." }); return; }
+    let subscription = null;
+    try { if ("serviceWorker" in navigator && Notification.permission === "granted") { const reg = await navigator.serviceWorker.ready; subscription = await reg.pushManager.getSubscription(); if (!subscription && s.vapid) subscription = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: this.b64(s.vapid) }); } } catch (e) {}
+    const due = (s.asanaTasks || []).filter(t => !t.completed && t.due && this.dueInfo(t.due).diff <= 0).length, next = (s.calEvents || []).find(e => !e.allDay && e.start > new Date());
+    try {
+      const r = await fetch(url + "/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: s.phone, channels: s.channels, reminders: s.reminders, subscription, content: { dueCount: due, nextEvent: next ? next.title : "" } }) });
+      this.setState({ remMsg: r.ok ? "Registered. The server will text " + (s.phone || "your phone") + " at your chosen times." : "Server replied " + r.status + "." });
+    } catch (e) { this.setState({ remMsg: "Couldn't reach the server. Is it deployed?" }); }
+  }
+  b64(k) { const p = "=".repeat((4 - k.length % 4) % 4), b = atob((k + p).replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(b, c => c.charCodeAt(0)); }
+  connectVals() {
+    const s = this.state, today = this.dayKey(), seg = s.setSeg || "asana", pd = s.pastDueDays || 14;
+    const fmtT = d => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(" AM", " a.m.").replace(" PM", " p.m.");
+    const now = new Date(), end = new Date(); end.setHours(23, 59, 59, 999);
+    const CAL_COLORS = { Outlook: "#1A2E52", Google: "#3D7C82" };
+    const agenda = (s.calEvents || []).filter(e => e.start <= end && e.end > new Date(now.getFullYear(), now.getMonth(), now.getDate())).map(e => { const past = !e.allDay && e.end < now, live = !e.allDay && e.start <= now && e.end > now; return {
+      time: e.allDay ? "All day" : fmtT(e.start), timeColor: live ? "#E15628" : past ? "#B4B7BB" : "#1A2E52", bar: live ? "#E15628" : CAL_COLORS[e.source] || "#9B9A97", fg: past ? "#9B9A97" : "#1A2E52", deco: "none",
+      title: e.title, sub: [e.allDay ? "" : "until " + fmtT(e.end), e.loc, e.source].filter(Boolean).join(" · "), ...this.eventPerson(e) }; });
+    const touch = this.pendingTouch();
+    const calOn = s.cals.some(c => c.url);
+    const tasks = (s.asanaTasks || []).filter(t => !t.completed), di = t => this.dueInfo(t.due).diff;
+    const past = tasks.filter(t => t.due && di(t) <= -pd), todayT = tasks.filter(t => t.due && di(t) <= 0 && di(t) > -pd), week = tasks.filter(t => t.due && di(t) > 0 && di(t) <= 7), later = tasks.filter(t => !t.due || di(t) > 7);
+    const row = t => { const d = this.dueInfo(t.due); return { name: t.name, project: t.project, url: t.url, due: t.due ? (d.diff < -1 ? Math.abs(d.diff) + " days late" : d.t) : "No date", dueColor: d.diff < 0 ? "#A53A16" : d.diff === 0 ? "#E15628" : "#787774", op: 1, mark: "", cb: "#D9DBDC", cbg: "#fff", done: () => this.completeAsana(t) }; };
+    const buckets = [["Significantly past due", past, "#A53A16", pd + "+ days late", "Nothing stuck. Good."], ["Due today", todayT, "#E15628", "including recent overdue", "Nothing due today."], ["This week", week, "#1A2E52", "next 7 days", "A clear week ahead."]];
+    const chipS = (label, on, toggle) => this.chip(label, on, toggle);
+    const hours = [6, 7, 8, 9, 12, 13, 14, 17, 18, 19, 20, 21, 22].map(hh => ({ v: hh, label: (hh % 12 || 12) + (hh < 12 ? " a.m." : " p.m.") }));
+    const permission = ("Notification" in window) ? Notification.permission : "unsupported";
+    const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true, isIOS = /iPhone|iPad/.test(navigator.userAgent);
+    return {
+      touchOn: !!touch && !s.settingsOpen && !s.onboarding, touchInitials: touch ? touch.p.name.split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase() : "", touchTitle: touch ? "Just met with " + touch.p.name + "?" : "", touchSub: touch ? touch.e.title + " · " + fmtT(touch.e.start) : "",
+      touchLog: () => { if (!touch) return; this.logTouch(touch.p, touch.e); }, touchSkip: () => { if (!touch) return; this.save({ touchSeen: Object.assign({}, s.touchSeen || {}, { [this.evKey(touch.e)]: 1 }) }); },
+      calConnected: calOn, calNotConnected: !calOn, agenda, agendaEmpty: !agenda.length, agendaEmptyMsg: s.calLoading ? "Loading your calendars…" : (s.calErrors || []).length ? "Couldn't reach " + s.calErrors.join(" and ") + ". Check the link in Settings." : "Nothing on the calendar today.",
+      calStatus: calOn ? (s.calLoading ? "Loading…" : agenda.length ? agenda.length + " event" + (agenda.length > 1 ? "s" : "") : "") : "",
+      asanaConnected: !!s.asanaToken, asanaNotConnected: !s.asanaToken, asanaStatus: s.asanaToken ? (s.asanaLoading ? "Syncing…" : s.asanaErr ? "Offline" : tasks.length + " open") : "",
+      asanaBuckets: buckets.map(b => ({ n: b[1].length, label: b[0], color: b[1].length ? b[2] : "#1A2E52", go: () => this.setState({ tasksOpen: true }) })),
+      isTasks: s.tab === "today" && !!s.tasksOpen && !s.sermonsOpen,
+      ...this.sermonVals(), closeTasks: () => this.setState({ tasksOpen: false }), asanaUser: s.asanaUser || "", asanaRefresh: () => this.loadAsana(true), asanaRefreshLabel: s.asanaLoading ? "Syncing…" : "Refresh",
+      asanaError: !!s.asanaErr, asanaErrorMsg: s.asanaErr || "",
+      asanaSections: buckets.map(b => ({ title: b[0], sub: b[3], color: b[2], count: b[1].length ? String(b[1].length) : "", items: b[1].sort((a, c) => di(a) - di(c)).map(row), empty: !b[1].length, emptyMsg: b[4] })),
+      asanaLater: later.slice(0, 20).map(t => ({ name: t.name, due: t.due ? new Date(t.due + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "No date" })), asanaLaterCount: later.length ? later.length + " more" : "",
+      settingsOpen: !!s.settingsOpen, closeSettings: () => this.setState({ settingsOpen: false }),
+      setSegs: [["asana", "Asana"], ["cal", "Calendar"], ["rem", "Reminders"], ["ai", "Brief"], ["pco", "LOFT"], ["sync", "Sync"], ["profile", "Profile"]].map(x => ({ label: x[1], go: () => this.setState({ setSeg: x[0] }), fg: seg === x[0] ? "#1A2E52" : "#9B9A97", line: seg === x[0] ? "#E15628" : "transparent" })),
+      setAsana: seg === "asana", setCal: seg === "cal", setRem: seg === "rem", setAi: seg === "ai", setSync: seg === "sync", setPco: seg === "pco", setProfile: seg === "profile",
+      ...this.pcoVals(),
+      ...this.syncVals(),
+      ...this.aiVals(),
+      asanaTokenDraft: s.asanaTokenDraft != null ? s.asanaTokenDraft : (s.asanaToken || ""), setAsanaToken: e => this.setState({ asanaTokenDraft: e.target.value }), asanaConnect: () => this.connectAsana(), asanaConnectLabel: s.asanaBusy ? "…" : s.asanaToken ? "Update" : "Connect",
+      asanaMsg: s.asanaMsg || (s.asanaToken ? "Connected as " + s.asanaUser + "." : ""), asanaMsgColor: /didn't|rejected/.test(s.asanaMsg || "") ? "#A53A16" : "#346538",
+      asanaDisconnect: () => this.save({ asanaToken: "", asanaUser: "", asanaTasks: [], asanaTokenDraft: "", asanaMsg: "" }),
+      pastDueOpts: [7, 14, 21, 30].map(n => chipS(n + " days", pd === n, () => this.save({ pastDueDays: n }))),
+      calRows: s.cals.map(c => ({ name: c.name, color: CAL_COLORS[c.name], url: c.url, set: e => this.setState({ cals: s.cals.map(x => x.id === c.id ? Object.assign({}, x, { url: e.target.value }) : x) }),
+        help: c.id === "outlook" ? "Outlook on the web → Settings → Calendar → Shared calendars → Publish a calendar → copy the ICS link." : "Google Calendar → Settings → your calendar → Integrate calendar → Secret address in iCal format.",
+        status: !c.url ? "Not connected" : (s.calErrors || []).includes(c.name) ? "Unreachable" : s.calAt ? "Connected" : "Saved", stColor: !c.url ? "#9B9A97" : (s.calErrors || []).includes(c.name) ? "#A53A16" : "#346538" })),
+      calSave: () => this.save({ cals: s.cals }, () => this.loadCal()), calSaveLabel: s.calLoading ? "Loading…" : "Save and sync", calMsg: s.calAt && !s.calLoading ? "Synced " + new Date(s.calAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + ". Events for the next 7 days are cached on this device." : "",
+      remRows: s.reminders.map(r => ({ label: r.label, sub: r.day != null ? "Sundays" : "Every day", h: r.h, on: r.on, swBg: r.on ? "#1A2E52" : "#D9DBDC", knob: r.on ? "21px" : "3px",
+        setH: e => this.save({ reminders: s.reminders.map(x => x.id === r.id ? Object.assign({}, x, { h: Number(e.target.value) }) : x) }, () => this.armLocalReminders()),
+        toggle: () => this.save({ reminders: s.reminders.map(x => x.id === r.id ? Object.assign({}, x, { on: !x.on }) : x) }, () => this.armLocalReminders()) })),
+      hourOpts: hours,
+      chanOpts: [["push", "App push"], ["sms", "Text"]].map(x => chipS(x[1], !!s.channels[x[0]], () => this.save({ channels: Object.assign({}, s.channels, { [x[0]]: !s.channels[x[0]] }) }))),
+      phone: s.phone || "", setPhone: e => this.save({ phone: e.target.value }), serverUrl: s.serverUrl || "", setServerUrl: e => this.save({ serverUrl: e.target.value }),
+      pushLabel: permission === "granted" ? "Push enabled" : permission === "denied" ? "Push blocked in browser" : permission === "unsupported" ? "Push unavailable" : "Enable app push",
+      remEnablePush: async () => { if (!this.conn) return; const p = await this.conn.requestPush(); this.setState({ remMsg: p === "granted" ? "Push enabled. You'll get the reminder while Sam OS is open or installed." : p === "unsupported" ? "This browser can't show notifications. Add Sam OS to your home screen in Safari." : "Notifications are blocked. Allow them in browser settings." }); this.armLocalReminders(); },
+      vapid: s.vapid || "", setVapid: e => this.save({ vapid: e.target.value }),
+      installOn: !s.installDismissed && !s.onboarding && !standalone && (!!this._bip || isIOS) && !s.settingsOpen, installCanPrompt: !!this._bip,
+      installMsg: this._bip ? "Install Sam OS for full-screen, offline, and reminders." : "Add to Home Screen: tap Share, then \"Add to Home Screen\". Reminders need it.",
+      installNow: async () => { const e = this._bip; if (!e) return; e.prompt(); await e.userChoice; this._bip = null; this.forceUpdate(); }, installDismiss: () => this.save({ installDismissed: true }),
+      installDot: standalone ? "#346538" : "#C8923A", installState: standalone ? "Installed. Runs full-screen and offline; push reminders can reach this device." : "Running in the browser. Add Sam OS to your home screen for offline use and push reminders.",
+      remRegister: () => this.registerServer(), regLabel: "Register with server", remMsg: s.remMsg || "",
+      nameDraft: s.nameDraft != null ? s.nameDraft : s.name, setNameDraft: e => this.setState({ nameDraft: e.target.value }), saveName: () => this.save({ name: (s.nameDraft || "").trim() || s.name }),
+      rerunSetup: () => this.setState({ settingsOpen: false, onboarding: true, obStep: 1, obName: s.name })
+    };
+  }
+
+  async claude(system, user, max) {
+    const key = this.state.aiKey; if (!key) throw new Error("nokey");
+    const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true", "content-type": "application/json" },
+      body: JSON.stringify({ model: "claude-sonnet-4-5", max_tokens: max || 400, system, messages: [{ role: "user", content: user }] }) });
+    if (!r.ok) throw new Error("http" + r.status);
+    const j = await r.json(); return (j.content || []).map(c => c.text || "").join("").trim();
+  }
+  dayContext() {
+    const s = this.state, v = this.renderVals(), today = this.dayKey();
+    const asana = (s.asanaTasks || []).filter(t => !t.completed && t.due && this.dueInfo(t.due).diff <= 7).map(t => "- " + t.name + " (" + this.dueInfo(t.due).t + ", " + t.project + ")");
+    const local = s.tasks.filter(t => !t.done && t.due && this.dueInfo(t.due).diff <= 1).map(t => "- " + t.text + " (" + this.dueInfo(t.due).t + (t.area ? ", " + t.area : "") + ")");
+    const ev = (s.calEvents || []).filter(e => this.dayKey(e.start) === today).map(e => "- " + (e.allDay ? "All day" : e.start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })) + " " + e.title);
+    const quiet = s.people.filter(p => this.pplStatus(p).days <= 0).map(p => "- " + p.name + (p.role ? " (" + p.role + ")" : "") + ", " + this.pplStatus(p).t);
+    const q = this.quarter(), rocks = s.rocks.filter(r => r.q === q && !r.done).map(r => "- " + r.text + (r.area ? " (" + r.area + ")" : ""));
+    const wk = this.weekKey(), rhy = s.rhythms.map(r => "- " + r + ": " + ((s.rhyMap[wk] || {})[r] ? "kept" : "not yet"));
+    return "Date: " + v.dateLong + "\nName: " + (s.name || "Sam") + "\nToday's anchor: " + v.dailyKind + " | " + v.dailyTitle + (v.dailyBody ? " | " + v.dailyBody : "") +
+      "\n\nCalendar today:\n" + (ev.join("\n") || "- nothing scheduled") + "\n\nAsana tasks due within 7 days:\n" + (asana.join("\n") || "- none") + "\n\nPersonal tasks due today/tomorrow:\n" + (local.join("\n") || "- none") +
+      "\n\nPeople going quiet:\n" + (quiet.join("\n") || "- none") + "\n\nRocks still open this quarter (" + q + "):\n" + (rocks.join("\n") || "- none") + "\n\nWeekly rhythms:\n" + rhy.join("\n") + (this.currentSermon() ? "\n\nNext sermon: " + (this.currentSermon().title || "") + " on " + this.currentSermon().text + ", preaching " + this.dueInfo(this.currentSermon().date).t + ", stages left: " + this.STAGES.filter(st => !(this.currentSermon().done || {})[st[0]]).map(st => st[1]).join(", ") : "");
+  }
+  async runBrief() {
+    const s = this.state, today = this.dayKey(); if (!s.aiKey || s.aiBusy) return;
+    this.setState({ aiBusy: true, aiErr: "" });
+    const voice = s.aiVoice === "cos" ? "Write as a sharp chief of staff: tight, factual, 4 to 6 short numbered lines, no encouragement, no filler." : "Write as a wise, warm pastor-friend: one sentence of grounding that draws on today's anchor, then the day in 3 to 5 plain sentences. Encouraging but not saccharine.";
+    const sys = "You write a morning brief for Sam, a lead pastor (LOFT City Church) who also coaches church planters with Stadia and leads the Plant Dallas network. " + voice + " Use the CSB if quoting scripture. Never use em dashes. Never invent facts not in the data. Under 120 words. Plain text, no headings, no markdown.";
+    try { const text = await this.claude(sys, this.dayContext(), 350); this.save({ aiBriefs: Object.assign({}, s.aiBriefs, { [today]: { text, ts: Date.now() } }), aiBusy: false }); }
+    catch (e) { this.setState({ aiBusy: false, aiErr: /401|403/.test(e.message) ? "Anthropic rejected the key. Check it in Settings." : /429/.test(e.message) ? "Rate limited. Try again in a minute." : "Couldn't reach Claude. Check your connection." }); }
+  }
+  async runReviewDraft() {
+    const s = this.state, wk = this.weekKey(); if (!s.aiKey || s.aiBusy) return;
+    this.setState({ aiBusy: true, aiReviewMsg: "Reading the week…" });
+    const d = new Date(); d.setDate(d.getDate() - 7);
+    const doneAsana = (s.asanaTasks || []).filter(t => t.completed).map(t => "- " + t.name), doneLocal = s.tasks.filter(t => t.done).map(t => "- " + t.text);
+    const jrn = Object.keys(s.journal).filter(k => new Date(k) >= d).map(k => "- " + k + ": " + this.JRN.filter(f => s.journal[k][f[0]]).map(f => f[1] + ": " + s.journal[k][f[0]]).join(" | "));
+    const ctx = this.dayContext() + "\n\nCompleted this week:\n" + (doneAsana.concat(doneLocal).join("\n") || "- nothing logged") + "\n\nReflections this week (private, summarize gently):\n" + (jrn.join("\n") || "- none");
+    const sys = "You help Sam, a lead pastor, draft his weekly review. Return ONLY a JSON object with four string fields: moved, dropped, top3, rest. Each is 1 to 3 plain sentences in first person as Sam, drawn strictly from the data. top3 lists exactly three items separated by semicolons. Never use em dashes. No markdown.";
+    try { const raw = await this.claude(sys, ctx, 600); const j = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1)); this.setState({ aiBusy: false, aiReviewMsg: "Drafted. Edit anything, then save.", revDraft: Object.assign({}, s.revDraft || s.reviews[wk] || {}, j) }); }
+    catch (e) { this.setState({ aiBusy: false, aiReviewMsg: /401|403/.test(e.message) ? "Anthropic rejected the key." : "Couldn't draft the review. Try again." }); }
+  }
+  aiVals() {
+    const s = this.state, today = this.dayKey(), b = s.aiBriefs[today], hasKey = !!s.aiKey;
+    if (hasKey && s.aiAuto && !b && !s.aiBusy && !this._autoRan && s.tab === "today") { this._autoRan = true; setTimeout(() => this.runBrief(), 1500); }
+    const voice = s.aiVoice || "pastoral";
+    return {
+      briefCardOn: s.onboarded, aiBriefHas: !!b, aiBriefNone: !b, aiBriefText: b ? b.text : "", aiBriefMeta: s.aiBusy ? "Writing…" : b ? new Date(b.ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "",
+      aiBriefHint: s.aiErr || (hasKey ? "Claude reads your calendar, tasks, people, and rocks and writes a short word for the day." : "Add your Anthropic API key and Claude will write a short pastoral brief from your day."),
+      aiBriefRun: () => this.runBrief(), aiBriefBtn: s.aiBusy ? "Writing…" : b ? "Rewrite" : "Write today's brief", aiNoKey: !hasKey, openAiSettings: () => this.setState({ settingsOpen: true, setSeg: "ai" }),
+      aiReviewOn: hasKey, aiReviewRun: () => this.runReviewDraft(), aiReviewBtn: s.aiBusy ? "Drafting…" : "Draft from this week's data", aiReviewMsg: s.aiReviewMsg || "",
+      aiKeyDraft: s.aiKeyDraft != null ? s.aiKeyDraft : (s.aiKey || ""), setAiKey: e => this.setState({ aiKeyDraft: e.target.value }), aiKeyBtn: hasKey ? "Update" : "Save",
+      aiSaveKey: () => { const k = (s.aiKeyDraft || "").trim(); if (!k) return; this.save({ aiKey: k, aiMsg: "Saved on this device." }, () => { this._autoRan = false; }); },
+      aiMsg: s.aiMsg || (hasKey ? "Key saved on this device." : ""), aiMsgColor: "#346538", aiHasKey: hasKey, aiRemoveKey: () => this.save({ aiKey: "", aiKeyDraft: "", aiMsg: "" }),
+      aiVoiceOpts: [["pastoral", "Pastoral"], ["cos", "Chief of staff"]].map(x => this.chip(x[1], voice === x[0], () => this.save({ aiVoice: x[0] }))),
+      aiAutoOpts: [[true, "Each morning"], [false, "Only when I tap"]].map(x => this.chip(x[1], !!s.aiAuto === x[0], () => this.save({ aiAuto: x[0] })))
+    };
+  }
+
+  STAGES = [["text", "Text"], ["study", "Study"], ["outline", "Outline"], ["manuscript", "Manuscript"], ["slides", "Slides"], ["practiced", "Practiced"], ["preached", "Preached"], ["repurposed", "Repurposed"]];
+  nextSunday() { const d = new Date(); d.setDate(d.getDate() + ((7 - d.getDay()) % 7 || 7)); return this.dayKey(d); }
+  currentSermon() { const s = this.state; return s.sermons.filter(x => !(x.done || {}).repurposed && x.date && this.dueInfo(x.date).diff >= -1).sort((a, b) => a.date.localeCompare(b.date))[0] || null; }
+  sermonVals() {
+    const s = this.state, cur = this.currentSermon(), filt = s.srmFilter || "Active";
+    const doneCount = sm => this.STAGES.filter(st => (sm.done || {})[st[0]]).length;
+    const nextStage = sm => this.STAGES.find(st => !(sm.done || {})[st[0]]);
+    const fmtD = k => new Date(k + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+    const rows = s.sermons.slice().sort((a, b) => (a.date || "").localeCompare(b.date || "")).filter(sm => filt === "All" || !(sm.done || {}).repurposed).map(sm => { const dd = this.dueInfo(sm.date).diff, ns = nextStage(sm), preached = !!(sm.done || {}).preached; return {
+      title: sm.title || "Untitled", text: sm.text || "No text yet", meta: [sm.series, sm.date ? fmtD(sm.date) : ""].filter(Boolean).join(" · "),
+      days: !sm.date ? "—" : preached ? "✓" : dd < 0 ? Math.abs(dd) : dd, daysLabel: !sm.date ? "no date" : preached ? "preached" : dd === 0 ? "today" : dd < 0 ? "days ago" : "days", dColor: preached ? "#346538" : dd <= 2 && !preached ? "#E15628" : "#1A2E52",
+      stages: this.STAGES.map(st => { const on = !!(sm.done || {})[st[0]]; return { label: st[1], border: on ? "#D6E0F0" : "#E4E3DE", bg: on ? "#EDF2FA" : "#fff", fg: on ? "#1A2E52" : "#787774", dot: on ? "#1A2E52" : "#E4E3DE",
+        toggle: () => { const d = Object.assign({}, sm.done || {}); d[st[0]] = !d[st[0]]; this.save({ sermons: s.sermons.map(x => x.id === sm.id ? Object.assign({}, x, { done: d }) : x) }); if (st[0] === "preached" && d.preached) this.toast("Preached. Now let it travel: tap Workflows."); } }; }),
+      nextLabel: ns ? "Next: " + ns[1] + " · " + doneCount(sm) + " of 8" : "Complete", canRepurpose: preached, repurpose: () => this.setState({ sermonsOpen: false, workOpen: true, wfFilter: "Preaching" }),
+      remove: () => { const prev = s.sermons; this.save({ sermons: prev.filter(x => x.id !== sm.id) }); this.toast("Sermon removed", () => this.save({ sermons: prev })); } }; });
+    const ns = cur ? nextStage(cur) : null;
+    return {
+      srmCountdown: cur && cur.date ? (this.dueInfo(cur.date).diff === 0 ? "today" : this.dueInfo(cur.date).diff + " days") : "", srmHasCurrent: !!cur, srmNoCurrent: !cur, openSermons: () => this.setState({ sermonsOpen: true }),
+      srmCurText: cur ? (cur.text || "Text not chosen") : "", srmCurTitle: cur ? (cur.title || "Untitled") : "", srmCurStage: cur ? doneCount(cur) + " of 8" : "", srmCurDots: this.STAGES.map(st => ({ bg: cur && (cur.done || {})[st[0]] ? "#1A2E52" : "#E4E3DE" })), srmCurNext: ns ? "Next: " + ns[1] : "All stages complete",
+      isSermons: s.tab === "today" && !!s.sermonsOpen, closeSermons: () => this.setState({ sermonsOpen: false }),
+      srmTitle: s.srmTitle || "", setSrmTitle: e => this.setState({ srmTitle: e.target.value }), srmText: s.srmText || "", setSrmText: e => this.setState({ srmText: e.target.value }), srmSeries: s.srmSeries || "", setSrmSeries: e => this.setState({ srmSeries: e.target.value }),
+      srmDate: s.srmDate || this.nextSunday(), setSrmDate: e => this.setState({ srmDate: e.target.value }), srmDateLabel: fmtD(s.srmDate || this.nextSunday()),
+      addSermon: () => { const title = (s.srmTitle || "").trim(), text = (s.srmText || "").trim(); if (!title && !text) return; this.save({ sermons: s.sermons.concat([{ id: Date.now(), title, text, series: (s.srmSeries || "").trim(), date: s.srmDate || this.nextSunday(), done: text ? { text: true } : {} }]), srmTitle: "", srmText: "", srmDate: "" }); },
+      srmChips: ["Active", "All"].map(x => this.chip(x, filt === x, () => this.setState({ srmFilter: x }))), srmRows: rows, srmEmpty: !rows.length, srmEmptyMsg: s.sermons.length ? "Nothing active. Everything has been preached and repurposed." : "Add the next sermon. Sunday's date is already set."
+    };
+  }
+
+  SYNC_KEYS = ["quarters","name","areas","rhythms","onboarded","tasks","rocks","prayers","people","library","journal","reviews","rhyMap","rolItems","saved","read","pastDueDays","cals","reminders","channels","phone","aiVoice","aiAuto","aiBriefs","sermons"];
+  async sbId(pass) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("samos:" + pass)); return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, "0")).join("").slice(0, 32); }
+  sbHeaders(sb) { return { apikey: sb.key, Authorization: "Bearer " + sb.key, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }; }
+  pushSync(keep) {
+    const sb = this.state.sb; if (!sb || !sb.url || !sb.key || !sb.pass) return;
+    clearTimeout(this._syncT);
+    this._syncT = setTimeout(async () => {
+      try {
+        const id = await this.sbId(sb.pass), data = {}; this.SYNC_KEYS.forEach(k => data[k] = keep[k]);
+        const stripped = Object.assign({}, data, { library: (data.library || []).map(it => Object.assign({}, it, { audio: it.audio && it.audio.length > 400000 ? null : it.audio })) });
+        const r = await fetch(sb.url.replace(/\/$/, "") + "/rest/v1/samos_state", { method: "POST", headers: this.sbHeaders(sb), body: JSON.stringify({ id, data: stripped, updated_at: new Date().toISOString() }) });
+        this.setState({ syncAt: Date.now(), syncErr: r.ok ? "" : "Supabase replied " + r.status });
+      } catch (e) { this.setState({ syncErr: "Couldn't reach Supabase." }); }
+    }, 1200);
+  }
+  async pullSync(manual) {
+    const sb = this.state.sb; if (!sb || !sb.url || !sb.key || !sb.pass) return false;
+    try {
+      const id = await this.sbId(sb.pass);
+      const r = await fetch(sb.url.replace(/\/$/, "") + "/rest/v1/samos_state?id=eq." + id + "&select=data,updated_at", { headers: { apikey: sb.key, Authorization: "Bearer " + sb.key } });
+      if (!r.ok) { this.setState({ syncErr: r.status === 401 ? "Key rejected." : r.status === 404 ? "Table missing. Run supabase.sql." : "Supabase replied " + r.status }); return false; }
+      const rows = await r.json();
+      if (rows.length) { const remote = rows[0].data || {}, patch = {}; this.SYNC_KEYS.forEach(k => { if (remote[k] !== undefined) patch[k] = remote[k]; }); patch.syncAt = Date.now(); patch.syncErr = ""; this.setState(patch, () => { try { localStorage.setItem(this.KEY, JSON.stringify(Object.assign(JSON.parse(localStorage.getItem(this.KEY) || "{}"), patch))); } catch (e) {} }); if (manual) this.toast("Pulled latest from sync."); }
+      else { this.setState({ syncAt: Date.now(), syncErr: "" }); this.pushSync(JSON.parse(localStorage.getItem(this.KEY) || "{}")); }
+      return true;
+    } catch (e) { this.setState({ syncErr: "Couldn't reach Supabase." }); return false; }
+  }
+  evKey(e) { return e.title + "|" + e.start.getTime(); }
+  matchPerson(e) {
+    const t = (e.title || "").toLowerCase(); if (!t || e.allDay) return null;
+    return this.state.people.find(p => { const parts = p.name.toLowerCase().split(/\s+/).filter(x => x.length > 2); return parts.length && (t.includes(p.name.toLowerCase()) || (parts.length > 1 && parts.every(x => t.includes(x)))); }) || null;
+  }
+  eventPerson(e) {
+    const p = this.matchPerson(e); if (!p) return { hasPerson: false };
+    const seen = (this.state.touchSeen || {})[this.evKey(e)], logged = p.last && Math.abs(p.last - e.end.getTime()) < 6 * 36e5 && p.last >= e.start.getTime() - 36e5;
+    return { hasPerson: true, tLabel: logged ? "Touched" : "Log touch", tBorder: logged ? "#EDF3EC" : "#E4E3DE", tBg: logged ? "#EDF3EC" : "#fff", tFg: logged ? "#346538" : "#1A2E52", touch: () => { if (!logged) this.logTouch(p, e); } };
+  }
+  pendingTouch() {
+    const s = this.state, now = Date.now(), seen = s.touchSeen || {};
+    const e = (s.calEvents || []).find(ev => !ev.allDay && ev.end.getTime() <= now && now - ev.end.getTime() < 3 * 36e5 && !seen[this.evKey(ev)] && this.matchPerson(ev));
+    if (!e) return null; const p = this.matchPerson(e); if (p.last && p.last >= e.start.getTime() - 36e5) return null;
+    return { e, p };
+  }
+  logTouch(p, e) {
+    const s = this.state;
+    this.save({ people: s.people.map(x => x.id === p.id ? Object.assign({}, x, { last: Math.min(Date.now(), e.end.getTime()) }) : x), touchSeen: Object.assign({}, s.touchSeen || {}, { [this.evKey(e)]: 1 }) });
+    this.toast("Touch logged for " + p.name);
+  }
+  QTR = [["gratitude", "What God did this quarter", "Answered prayers, growth, moments of grace across every area", "#346538"], ["learned", "What I learned about myself", "Patterns, limits, what gave life and what drained it", "#956400"], ["next", "Rocks for next quarter", "Three per area at most. What must be true in 90 days?", "#1A2E52"], ["rest", "Rest and family", "Sabbaths kept, time with Ann and the kids, what needs protecting", "#E15628"]];
+  reviewQuarter() {
+    // In the final 3 weeks of a quarter, or the first 2 of the next, review the quarter that is ending/just ended.
+    const d = new Date(), m = d.getMonth(), q = Math.floor(m / 3), y = d.getFullYear();
+    const inFirstWeeks = (m % 3 === 0) && d.getDate() <= 14;
+    const rq = inFirstWeeks ? (q === 0 ? 3 : q - 1) : q, ry = inFirstWeeks && q === 0 ? y - 1 : y;
+    const nq = rq === 3 ? 0 : rq + 1, ny = rq === 3 ? ry + 1 : ry;
+    const endDate = new Date(ry, rq * 3 + 3, 0); const daysLeft = Math.round((endDate - d) / 864e5);
+    return { name: "Q" + (rq + 1) + " " + ry, next: "Q" + (nq + 1) + " " + ny, daysLeft, ended: daysLeft < 0 };
+  }
+  quarterVals() {
+    const s = this.state, rq = this.reviewQuarter(), key = rq.name, saved = s.quarters[key], draft = s.qtrDraft || saved || {};
+    const rocks = s.rocks.filter(r => r.q === key), done = rocks.filter(r => r.done).length;
+    const jrnDays = Object.keys(s.journal).filter(k => { const d = new Date(k + "T00:00:00"); return "Q" + (Math.floor(d.getMonth() / 3) + 1) + " " + d.getFullYear() === key; }).length;
+    const reviews = Object.keys(s.reviews).filter(k => { const y = +k.split("-W")[0], w = +k.split("-W")[1]; const d = new Date(y, 0, 1 + (w - 1) * 7); return "Q" + (Math.floor(d.getMonth() / 3) + 1) + " " + d.getFullYear() === key; }).length;
+    const verdictOf = r => r.done ? "done" : (r.verdict || "");
+    const setVerdict = (r, v) => {
+      let list = s.rocks.map(x => x.id === r.id ? Object.assign({}, x, { verdict: v, done: v === "done" ? true : x.done && v !== "carry" && v !== "release" ? x.done : false }) : x);
+      if (v === "carry" && !s.rocks.some(x => x.carriedFrom === r.id)) list = list.concat([{ id: Date.now(), text: r.text, area: r.area, q: rq.next, done: false, carriedFrom: r.id }]);
+      if (v !== "carry") list = list.filter(x => x.carriedFrom !== r.id);
+      this.save({ rocks: list }); if (v === "release") this.toast("Released. That is allowed.");
+    };
+    const V = [["done", "Done", "#346538", "#EDF3EC"], ["carry", "Carry", "#1A2E52", "#EDF2FA"], ["release", "Release", "#A53A16", "#FDF1EB"]];
+    const past = Object.keys(s.quarters).filter(k => k !== key || saved).sort((a, b) => (b.split(" ")[1] + b.split(" ")[0]).localeCompare(a.split(" ")[1] + a.split(" ")[0])).map(k => { const e = s.quarters[k], open = s.qtrOpen === k, parts = this.QTR.filter(f => e[f[0]]).map(f => ({ label: f[1], text: e[f[0]] })); return { date: k, open, chev: open ? "–" : "+", parts, toggle: () => this.setState({ qtrOpen: open ? null : k }) }; });
+    return {
+      qtrName: key, qtrIntro: rq.ended ? key + " has ended. Look back honestly, then set the rocks for " + rq.next + "." : rq.daysLeft <= 21 ? rq.daysLeft + " days left in " + key + ". A good week to start looking back." : "You are mid-quarter. Come back in the last three weeks of " + key + ", or use this now to check your rocks.",
+      qtrSnap: [{ n: rocks.length ? done + "/" + rocks.length : "—", label: "rocks done" }, { n: jrnDays, label: "days reflected" }, { n: reviews, label: "weekly reviews" }],
+      qtrRocks: rocks.map(r => { const v = verdictOf(r); return { text: r.text, area: r.area, areaColor: this.AREA_COLORS[r.area] || "#5F656E", deco: v === "release" ? "line-through" : "none",
+        verdicts: V.map(x => ({ label: x[1], border: v === x[0] ? x[3] : "#E4E3DE", bg: v === x[0] ? x[3] : "#fff", fg: v === x[0] ? x[2] : "#787774", pick: () => setVerdict(r, x[0]) })) }; }),
+      qtrNoRocks: !rocks.length,
+      qtrFields: this.QTR.map(f => ({ label: f[1], ph: f[2], color: f[3], value: draft[f[0]] || "", set: e => this.setState({ qtrDraft: Object.assign({}, draft, { [f[0]]: e.target.value }) }) })),
+      qtrSaveLabel: saved ? "Update " + key + " review" : "Save " + key + " review",
+      saveQuarter: () => { const d = s.qtrDraft || {}; if (!this.QTR.some(f => (d[f[0]] || "").trim())) return; this.save({ quarters: Object.assign({}, s.quarters, { [key]: Object.assign({ ts: Date.now() }, d) }), qtrDraft: null }); this.toast("Quarter closed. Well done."); },
+      qtrPast: past, qtrPastCount: past.length ? past.length + " quarter" + (past.length > 1 ? "s" : "") : "", qtrNone: !past.length,
+      aiQtrRun: () => this.runQuarterDraft(), aiQtrBtn: s.aiBusy ? "Drafting…" : "Draft from the quarter's data", aiQtrMsg: s.aiQtrMsg || ""
+    };
+  }
+  async runQuarterDraft() {
+    const s = this.state, rq = this.reviewQuarter(); if (!s.aiKey || s.aiBusy) return;
+    this.setState({ aiBusy: true, aiQtrMsg: "Reading the quarter…" });
+    const inQ = k => { const d = new Date(k.includes("-W") ? new Date(+k.split("-W")[0], 0, 1 + (+k.split("-W")[1] - 1) * 7) : k + "T00:00:00"); return "Q" + (Math.floor(d.getMonth() / 3) + 1) + " " + d.getFullYear() === rq.name; };
+    const rocks = s.rocks.filter(r => r.q === rq.name).map(r => "- " + r.text + " (" + (r.area || "no area") + "): " + (r.done ? "done" : r.verdict || "open"));
+    const revs = Object.keys(s.reviews).filter(inQ).sort().map(k => "- " + k + ": " + this.REV.filter(f => s.reviews[k][f[0]]).map(f => f[1] + ": " + s.reviews[k][f[0]]).join(" | "));
+    const jrn = Object.keys(s.journal).filter(inQ).sort().slice(-20).map(k => "- " + k + ": " + this.JRN.filter(f => s.journal[k][f[0]]).map(f => f[1] + ": " + s.journal[k][f[0]]).join(" | "));
+    const ctx = "Quarter: " + rq.name + "\\nAreas: " + s.areas.join(", ") + "\\n\\nRocks:\\n" + (rocks.join("\\n") || "- none") + "\\n\\nWeekly reviews:\\n" + (revs.join("\\n") || "- none") + "\\n\\nDaily reflections (recent, private):\\n" + (jrn.join("\\n") || "- none");
+    const sys = "You help Sam, a lead pastor who also coaches planters with Stadia and leads Plant Dallas, close out a quarter. Return ONLY a JSON object with four string fields: gratitude, learned, next, rest. First person as Sam, 2 to 4 plain sentences each, drawn strictly from the data. 'next' proposes rocks for " + rq.next + " grouped by area, at most three per area, separated by semicolons. Never use em dashes. No markdown.";
+    try { const raw = await this.claude(sys, ctx, 900); const j = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1)); this.setState({ aiBusy: false, aiQtrMsg: "Drafted. Edit anything, then save.", qtrDraft: Object.assign({}, s.qtrDraft || s.quarters[rq.name] || {}, j) }); }
+    catch (e) { this.setState({ aiBusy: false, aiQtrMsg: /401|403/.test(e.message) ? "Anthropic rejected the key." : "Couldn't draft the review. Try again." }); }
+  }
+  syncVals() {
+    const s = this.state, sb = s.sb || {}, d = s.sbDraft || sb, on = !!(sb.url && sb.key && sb.pass);
+    return {
+      syncOn: on, syncDot: on ? (s.syncErr ? "#A53A16" : "#346538") : "#C8923A",
+      syncState: on ? (s.syncErr || (s.syncAt ? "Synced " + new Date(s.syncAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) + ". Every save goes up; opening the app pulls down." : "Connected.")) : "Not connected. Data lives on this device only.",
+      syncNow: () => this.pullSync(true),
+      sbUrl: d.url || "", setSbUrl: e => this.setState({ sbDraft: Object.assign({}, d, { url: e.target.value }) }), sbKey: d.key || "", setSbKey: e => this.setState({ sbDraft: Object.assign({}, d, { key: e.target.value }) }), sbPass: d.pass || "", setSbPass: e => this.setState({ sbDraft: Object.assign({}, d, { pass: e.target.value }) }),
+      syncConnectLabel: s.syncBusy ? "Connecting…" : on ? "Update" : "Connect",
+      syncConnect: () => { const nd = { url: (d.url || "").trim(), key: (d.key || "").trim(), pass: (d.pass || "").trim() }; if (!nd.url || !nd.key || !nd.pass) { this.setState({ syncMsg: "All three fields are needed." }); return; } this.setState({ syncBusy: true, syncMsg: "" }); this.save({ sb: nd }, async () => { const ok = await this.pullSync(false); this.setState({ syncBusy: false, syncMsg: ok ? "Connected. This device is now in sync." : (this.state.syncErr || "Couldn't connect.") }); }); },
+      syncMsg: s.syncMsg || "", syncMsgColor: /Connected/.test(s.syncMsg || "") ? "#346538" : "#A53A16",
+      syncDisconnect: () => this.save({ sb: { url: "", key: "", pass: "" }, sbDraft: null, syncMsg: "", syncErr: "", syncAt: null })
+    };
+  }
+
+  pcoAuth(p) { return { Authorization: "Basic " + btoa(p.id + ":" + p.secret) }; }
+  async pcoGet(p, url) { const r = await fetch(url, { headers: this.pcoAuth(p) }); if (!r.ok) throw new Error("pco" + r.status); return await r.json(); }
+  async loadPco() {
+    const p = this.state.pco; if (!p || !p.id || !p.secret) return;
+    this.setState({ pcoLoading: true, pcoErr: "" });
+    const sun = d => { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - x.getDay()); return x; };
+    const last = sun(new Date()); if (last.getTime() === sun(new Date()).getTime() && new Date().getDay() === 0 && new Date().getHours() < 15) last.setDate(last.getDate() - 7);
+    const prev = new Date(last); prev.setDate(prev.getDate() - 7);
+    const iso = d => d.toISOString().slice(0, 10), plus = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+    const week = async (start) => {
+      const end = plus(start, 7), out = { giving: null, attendance: null, guests: null };
+      try { const g = await this.pcoGet(p, "https://api.planningcenteronline.com/giving/v2/donations?where[received_at][gte]=" + iso(start) + "&where[received_at][lt]=" + iso(end) + "&per_page=100"); out.giving = (g.data || []).reduce((a, d) => a + (d.attributes.amount_cents || 0), 0) / 100; } catch (e) { out.gErr = true; }
+      try { const c = await this.pcoGet(p, "https://api.planningcenteronline.com/check-ins/v2/headcounts?where[created_at][gte]=" + iso(start) + "&where[created_at][lt]=" + iso(end) + "&per_page=100"); out.attendance = (c.data || []).reduce((a, d) => a + (d.attributes.total || 0), 0); } catch (e) { out.aErr = true; }
+      try { const pp = await this.pcoGet(p, "https://api.planningcenteronline.com/people/v2/people?where[created_at][gte]=" + iso(start) + "&where[created_at][lt]=" + iso(end) + "&per_page=100"); out.guests = (pp.data || []).length; } catch (e) { out.pErr = true; }
+      return out;
+    };
+    try { const [a, b] = await Promise.all([week(last), week(prev)]); const err = a.gErr && a.aErr && a.pErr; this.setState({ pcoLoading: false, pcoData: { last: a, prev: b, date: last.getTime() }, pcoErr: err ? "Planning Center refused the request. Check the token, or it may need the relay." : "" }); }
+    catch (e) { this.setState({ pcoLoading: false, pcoErr: "Couldn't reach Planning Center." }); }
+  }
+  pcoVals() {
+    const s = this.state, p = s.pco || {}, on = !!(p.id && p.secret), d = s.pcoDraft || p, data = s.pcoData;
+    const money = n => n == null ? "—" : "$" + Math.round(n).toLocaleString();
+    const delta = (a, b, fmt) => a == null || b == null ? "" : a === b ? "same as prior" : (a > b ? "▲ " : "▼ ") + (fmt ? fmt(Math.abs(a - b)) : Math.abs(a - b)) + " vs prior";
+    const stat = (label, a, b, fmt) => ({ label, n: fmt ? fmt(a) : (a == null ? "—" : a), delta: delta(a, b, fmt), dColor: a == null || b == null || a === b ? "#9B9A97" : a > b ? "#346538" : "#A53A16" });
+    return {
+      pcoConnected: on, pcoStatus: s.pcoLoading ? "Loading…" : data ? new Date(data.date).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "",
+      pcoStats: data ? [stat("giving", data.last.giving, data.prev.giving, money), stat("attendance", data.last.attendance, data.prev.attendance), stat("new people", data.last.guests, data.prev.guests)] : [{ label: "giving", n: "—", delta: "", dColor: "#9B9A97" }, { label: "attendance", n: "—", delta: "", dColor: "#9B9A97" }, { label: "new people", n: "—", delta: "", dColor: "#9B9A97" }],
+      pcoErr: !!s.pcoErr, pcoErrMsg: s.pcoErr || "",
+      pcoIdDraft: d.id || "", setPcoId: e => this.setState({ pcoDraft: Object.assign({}, d, { id: e.target.value }) }), pcoSecretDraft: d.secret || "", setPcoSecret: e => this.setState({ pcoDraft: Object.assign({}, d, { secret: e.target.value }) }),
+      pcoConnectLabel: s.pcoBusy ? "Checking…" : on ? "Update" : "Connect",
+      pcoConnect: async () => { const np = { id: (d.id || "").trim(), secret: (d.secret || "").trim() }; if (!np.id || !np.secret) return; this.setState({ pcoBusy: true, pcoMsg: "" }); try { const me = await this.pcoGet(np, "https://api.planningcenteronline.com/people/v2/me"); this.save({ pco: np, pcoBusy: false, pcoMsg: "Connected as " + (me.data.attributes.name || "you") + "." }, () => this.loadPco()); } catch (e) { this.setState({ pcoBusy: false, pcoMsg: /401|403/.test(e.message) ? "Planning Center rejected those credentials." : "Couldn't reach Planning Center from the browser. The relay option is next if this persists." }); } },
+      pcoMsg: s.pcoMsg || (on ? "Connected." : ""), pcoMsgColor: /Connected/.test(s.pcoMsg || (on ? "Connected." : "")) ? "#346538" : "#A53A16",
+      pcoDisconnect: () => this.save({ pco: { id: "", secret: "" }, pcoDraft: null, pcoData: null, pcoMsg: "", pcoErr: "" })
+    };
+  }
+}
+</script>
+</body>
+</html>
